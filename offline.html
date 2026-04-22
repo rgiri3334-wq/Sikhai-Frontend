@@ -213,7 +213,7 @@
         </div>
         <span class="lesson-arrow">›</span>
       </a>
-      <a class="lesson-item" href="/sikai.html">
+      <a class="lesson-item" href="/">
         <span class="lesson-icon">🗺️</span>
         <div>
           <div class="lesson-name">Nepal Geography — Beginner</div>
@@ -221,7 +221,7 @@
         </div>
         <span class="lesson-arrow">›</span>
       </a>
-      <a class="lesson-item" href="/sikai.html">
+      <a class="lesson-item" href="/">
         <span class="lesson-icon">💻</span>
         <div>
           <div class="lesson-name">Python Basics — Beginner</div>
@@ -244,7 +244,7 @@
 setInterval(async () => {
   try {
     const res = await fetch('/manifest.json', { cache: 'no-store' });
-    if (res.ok) window.location.href = '/sikai.html';
+    if (res.ok) window.location.href = '/';
   } catch { /* still offline */ }
 }, 10000);
 
@@ -254,7 +254,7 @@ window.addEventListener('online', () => {
   document.querySelector('h1').textContent = "You're Back Online!";
   document.querySelector('.nepali-text').textContent = 'Connection restored!';
   document.querySelector('.nepali-text').style.color = '#3ecfb2';
-  setTimeout(() => window.location.href = '/sikai.html', 1500);
+  setTimeout(() => window.location.href = '/', 1500);
 });
 </script>
 </body>
