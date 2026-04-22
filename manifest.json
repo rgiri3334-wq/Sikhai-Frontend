@@ -2,7 +2,7 @@
   "name": "सिकाइ Sikai — Nepal's AI Tutor",
   "short_name": "Sikai",
   "description": "Nepal's AI-powered learning platform. Generate courses, learn in Nepali, quiz yourself — anywhere, anytime.",
-  "start_url": "/sikai.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
