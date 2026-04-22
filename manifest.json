@@ -1,0 +1,104 @@
+{
+  "name": "सिकाइ Sikai — Nepal's AI Tutor",
+  "short_name": "Sikai",
+  "description": "Nepal's AI-powered learning platform. Generate courses, learn in Nepali, quiz yourself — anywhere, anytime.",
+  "start_url": "/sikai.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1118",
+  "theme_color": "#f0a500",
+  "lang": "ne",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Sikai Home — AI Course Generator"
+    },
+    {
+      "src": "screenshots/mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Sikai Mobile — Learn on the go"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Generate a Course",
+      "short_name": "New Course",
+      "description": "Instantly generate an AI course on any topic",
+      "url": "/sikai.html?action=generate",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Ask AI Tutor",
+      "short_name": "Ask Tutor",
+      "description": "Ask Sikai any doubt in Nepali or English",
+      "url": "/sikai.html?action=tutor",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Daily Quiz",
+      "short_name": "Quiz",
+      "description": "Take today's 5-question practice quiz",
+      "url": "/sikai.html?action=quiz",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

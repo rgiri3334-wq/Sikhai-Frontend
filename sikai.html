@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0f1923"/>
+<meta name="description" content="Sikai - Nepal's AI-powered learning platform. Learn smarter, learn in Nepali."/>
+<title>सिकाइ — Sikai Learning</title>
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Sikai"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;0,900;1,300;1,700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0b1118;
+  --surface: #111a24;
+  --surface2: #162030;
+  --border: rgba(255,255,255,0.07);
+  --accent: #f0a500;
+  --accent2: #e05c2a;
+  --accent3: #3ecfb2;
+  --text: #eef2f7;
+  --muted: #7a8fa6;
+  --gradient: linear-gradient(135deg, #f0a500 0%, #e05c2a 100%);
+  --glow: 0 0 40px rgba(240,165,0,0.15);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+html{scroll-behavior:smooth;}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* Animated background */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+.bg-orb:nth-child(1){width:500px;height:500px;background:#f0a500;top:-100px;left:-100px;animation-delay:0s;}
+.bg-orb:nth-child(2){width:400px;height:400px;background:#e05c2a;bottom:-50px;right:-100px;animation-delay:-4s;}
+.bg-orb:nth-child(3){width:300px;height:300px;background:#3ecfb2;top:50%;left:50%;animation-delay:-8s;}
+
+@keyframes orbFloat {
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(30px,-30px) scale(1.05);}
+  66%{transform:translate(-20px,20px) scale(0.97);}
+}
+
+/* Grid overlay */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ============ NAV ============ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px;
+  background: rgba(11,17,24,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 40px; height: 40px;
+  background: var(--gradient);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  box-shadow: var(--glow);
+}
+
+.logo-text {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.logo-sub {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 1px;
+  display: block;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  background: var(--gradient);
+  color: #000 !important;
+  padding: 10px 24px;
+  border-radius: 100px;
+  font-weight: 600 !important;
+  font-size: 14px;
+  transition: opacity 0.2s, transform 0.2s !important;
+}
+.nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ============ HERO ============ */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 120px 40px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 60px;
+}
+
+.hero-left { flex: 1; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(240,165,0,0.1);
+  border: 1px solid rgba(240,165,0,0.3);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-badge span { font-size: 16px; }
+
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(48px, 6vw, 76px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 12px;
+  animation: fadeUp 0.8s ease 0.1s both;
+}
+
+.hero-title .nepali {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: clamp(40px, 5vw, 64px);
+}
+
+.hero-title .eng {
+  display: block;
+  color: var(--text);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(30px, 4vw, 50px);
+  margin-top: 6px;
+}
+
+.hero-desc {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 480px;
+  margin-bottom: 40px;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+
+.hero-desc strong { color: var(--text); }
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: fadeUp 0.8s ease 0.3s both;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gradient);
+  color: #000;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 16px 32px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 30px rgba(240,165,0,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(240,165,0,0.4); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 16px 32px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-secondary:hover { background: var(--surface); border-color: rgba(255,255,255,0.15); }
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 56px;
+  animation: fadeUp 0.8s ease 0.4s both;
+}
+
+.stat { }
+.stat-num {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Hero right — App Preview */
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+
+.phone-mockup {
+  width: 300px;
+  background: var(--surface);
+  border-radius: 36px;
+  border: 1px solid var(--border);
+  padding: 24px 20px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), var(--glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.phone-mockup::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 80px; height: 4px;
+  background: var(--border);
+  border-radius: 0 0 4px 4px;
+}
+
+.phone-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.phone-header h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  color: var(--text);
+}
+.phone-header p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.phone-subject-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.phone-subject {
+  background: var(--surface2);
+  border-radius: 14px;
+  padding: 14px 12px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.phone-subject:hover { transform: scale(1.03); border-color: rgba(240,165,0,0.3); }
+
+.phone-subject-icon { font-size: 22px; margin-bottom: 6px; }
+.phone-subject-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}
+.phone-subject-lessons { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.phone-ai-box {
+  background: linear-gradient(135deg, rgba(240,165,0,0.1), rgba(224,92,42,0.1));
+  border: 1px solid rgba(240,165,0,0.2);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phone-ai-icon {
+  width: 36px; height: 36px;
+  background: var(--gradient);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.phone-ai-text { font-size: 12px; color: var(--text); font-weight: 500; }
+.phone-ai-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* Floating chips around phone */
+.floating-chips {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.chip {
+  position: absolute;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.chip-1 { top: 15%; left: -80px; animation: chipFloat 4s ease-in-out infinite; }
+.chip-2 { top: 40%; right: -70px; animation: chipFloat 4s ease-in-out infinite 1s; }
+.chip-3 { bottom: 20%; left: -60px; animation: chipFloat 4s ease-in-out infinite 2s; }
+
+@keyframes chipFloat {
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-8px); }
+}
+
+/* ============ SECTIONS ============ */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 40px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.section-desc {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* ============ HOW IT WORKS ============ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 24px;
+  position: relative;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.step:hover { transform: translateY(-4px); border-color: rgba(240,165,0,0.3); }
+
+.step-num {
+  font-family: 'Fraunces', serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: rgba(240,165,0,0.15);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.step-icon { font-size: 28px; margin-bottom: 12px; }
+.step-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.step-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* Connector line */
+.step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 18px;
+  z-index: 2;
+}
+
+/* ============ AI DEMO SECTION ============ */
+.ai-demo-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-demo-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.ai-window {
+  background: var(--bg);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+.ai-window-header {
+  background: var(--surface2);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.window-dots { display: flex; gap: 6px; }
+.window-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.window-dot:nth-child(1){ background: #ff5f57; }
+.window-dot:nth-child(2){ background: #febc2e; }
+.window-dot:nth-child(3){ background: #28c840; }
+
+.window-title {
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: 4px;
+  font-weight: 500;
+}
+
+.ai-chat {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 320px;
+}
+
+.chat-msg {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: var(--gradient);
+  color: #000;
+  font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg.ai {
+  align-self: flex-start;
+  background: var(--surface2);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.chat-msg.ai .ai-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.chat-typing {
+  align-self: flex-start;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  padding: 14px 18px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.typing-dot {
+  width: 7px; height: 7px;
+  background: var(--muted);
+  border-radius: 50%;
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2){ animation-delay: 0.2s; }
+.typing-dot:nth-child(3){ animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%,60%,100%{ transform: translateY(0); }
+  30%{ transform: translateY(-6px); background: var(--accent); }
+}
+
+.ai-input-row {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+}
+
+.ai-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 10px 18px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ai-input:focus { border-color: rgba(240,165,0,0.4); }
+.ai-input::placeholder { color: var(--muted); }
+
+.ai-send {
+  width: 38px; height: 38px;
+  background: var(--gradient);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.ai-send:hover { transform: scale(1.1); }
+
+/* Features list */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.feature-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.feature-icon-box {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.fi-orange { background: rgba(240,165,0,0.1); }
+.fi-red { background: rgba(224,92,42,0.1); }
+.fi-teal { background: rgba(62,207,178,0.1); }
+
+.feature-item-text h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.feature-item-text p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* ============ SUBJECTS ============ */
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 60px;
+}
+
+.subject-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: transform 0.3s, border-color 0.3s, background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.subject-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gradient);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.subject-card:hover { transform: translateY(-4px); border-color: rgba(240,165,0,0.3); background: var(--surface2); }
+.subject-card:hover::before { opacity: 1; }
+
+.subject-emoji { font-size: 36px; margin-bottom: 14px; }
+.subject-name {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.subject-name-np {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.subject-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+
+.subject-meta {
+  display: flex;
+  gap: 12px;
+}
+.subject-tag {
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 100px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ============ LEARNING PATH ============ */
+.path-section { }
+
+.path-visual {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.path-level {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  align-items: start;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.path-level:last-child { border-bottom: none; }
+
+.path-level-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.path-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  width: fit-content;
+}
+.pill-beginner { background: rgba(62,207,178,0.15); color: #3ecfb2; border: 1px solid rgba(62,207,178,0.3); }
+.pill-intermediate { background: rgba(240,165,0,0.15); color: var(--accent); border: 1px solid rgba(240,165,0,0.3); }
+.pill-advanced { background: rgba(224,92,42,0.15); color: var(--accent2); border: 1px solid rgba(224,92,42,0.3); }
+
+.path-level-desc { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+.path-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.path-module {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.path-module:hover { background: var(--surface2); border-color: rgba(240,165,0,0.3); }
+.path-module-icon { font-size: 16px; }
+.path-module.done { border-color: rgba(62,207,178,0.4); color: #3ecfb2; }
+.path-module.done::after { content: ' ✓'; color: #3ecfb2; }
+
+/* ============ TESTIMONIALS ============ */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.testimonial-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 24px;
+  position: relative;
+}
+
+.testimonial-quote {
+  font-size: 48px;
+  font-family: 'Fraunces', serif;
+  color: rgba(240,165,0,0.2);
+  line-height: 1;
+  margin-bottom: -10px;
+}
+
+.testimonial-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  background: var(--surface2);
+  flex-shrink: 0;
+}
+
+.author-name { font-size: 14px; font-weight: 600; }
+.author-role { font-size: 12px; color: var(--muted); }
+
+.stars {
+  position: absolute;
+  top: 24px; right: 24px;
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+/* ============ CTA ============ */
+.cta-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.cta-inner {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 120px 40px;
+}
+
+.cta-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(40px, 5vw, 60px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.cta-title .highlight {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cta-desc {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+.cta-install-hint {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ============ FOOTER ============ */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-left { font-size: 14px; color: var(--muted); }
+.footer-left strong { color: var(--text); }
+
+.footer-right {
+  display: flex;
+  gap: 24px;
+}
+.footer-right a {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-right a:hover { color: var(--text); }
+
+/* ============ MODAL (Course Generator) ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  transform: translateY(20px);
+  transition: transform 0.3s;
+  scrollbar-width: none;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal::-webkit-scrollbar { display: none; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.modal-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.modal-close {
+  width: 36px; height: 36px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  color: var(--muted);
+  transition: color 0.2s, background 0.2s;
+}
+.modal-close:hover { color: var(--text); background: var(--bg); }
+
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: rgba(240,165,0,0.5); }
+.form-input::placeholder { color: var(--muted); }
+
+.level-pills {
+  display: flex;
+  gap: 10px;
+}
+
+.level-pill {
+  flex: 1;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.level-pill.active-beginner { background: rgba(62,207,178,0.15); color: #3ecfb2; border-color: rgba(62,207,178,0.4); }
+.level-pill.active-intermediate { background: rgba(240,165,0,0.15); color: var(--accent); border-color: rgba(240,165,0,0.4); }
+.level-pill.active-advanced { background: rgba(224,92,42,0.15); color: var(--accent2); border-color: rgba(224,92,42,0.4); }
+
+.btn-generate {
+  width: 100%;
+  padding: 18px;
+  background: var(--gradient);
+  border: none;
+  border-radius: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 30px rgba(240,165,0,0.25);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-generate:hover { transform: translateY(-1px); box-shadow: 0 12px 40px rgba(240,165,0,0.35); }
+
+/* Generated course output */
+.course-output {
+  display: none;
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.course-output.visible { display: block; }
+
+.course-output-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.module-list { display: flex; flex-direction: column; gap: 10px; }
+
+.module-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  animation: fadeUp 0.4s ease both;
+}
+.module-item:hover { background: var(--surface2); }
+
+.module-num {
+  width: 28px; height: 28px;
+  background: var(--gradient);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.module-name { font-size: 14px; font-weight: 600; }
+.module-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.module-arrow { margin-left: auto; color: var(--muted); font-size: 16px; }
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+
+  .hero { flex-direction: column; padding: 100px 20px 60px; gap: 40px; }
+  .hero-right { display: none; }
+  .hero-stats { gap: 24px; }
+
+  .section-inner { padding: 60px 20px; }
+
+  .steps { grid-template-columns: 1fr 1fr; }
+  .step::after { display: none; }
+
+  .ai-demo-layout { grid-template-columns: 1fr; }
+  .ai-demo-layout .section-title { font-size: 32px; }
+
+  .subjects-grid { grid-template-columns: 1fr 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .path-level { grid-template-columns: 1fr; gap: 16px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+
+@media (max-width: 560px) {
+  .steps { grid-template-columns: 1fr; }
+  .subjects-grid { grid-template-columns: 1fr; }
+  .hero-actions { flex-direction: column; }
+  .btn-primary, .btn-secondary { justify-content: center; }
+  .modal { padding: 24px 20px; }
+  .level-pills { flex-direction: column; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Selection */
+::selection { background: rgba(240,165,0,0.3); color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-canvas">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+<div class="grid-overlay"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-icon">📚</div>
+    <div>
+      <span class="logo-text">Sikai</span>
+      <span class="logo-sub">सिकाइ — Nepal's AI Tutor</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#subjects">Subjects</a></li>
+    <li><a href="#path">Learning Path</a></li>
+    <li><a href="#" class="nav-cta" onclick="openModal()">Start Learning Free</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-badge"><span>🇳🇵</span> Built for Nepal's students</div>
+      <h1 class="hero-title">
+        <span class="nepali">सिकाइ</span>
+        <span class="eng">Learn Smarter,<br/>Learn in Nepali.</span>
+      </h1>
+      <p class="hero-desc">
+        Nepal's first AI-powered learning platform. Type any topic — from <strong>Photosynthesis to Lok Sewa</strong> — and Sikai builds you a full course, quiz, and voice lesson in seconds.
+      </p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary" onclick="openModal(); return false;">
+          ✨ Generate My First Course
+        </a>
+        <a href="#how" class="btn-secondary">
+          ▶ See How It Works
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">12+</div>
+          <div class="stat-label">Subjects covered</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">3 Levels</div>
+          <div class="stat-label">Beginner to Advanced</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">Nepali</div>
+          <div class="stat-label">Native language support</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div style="position:relative;">
+        <div class="floating-chips">
+          <div class="chip chip-1">🎧 Voice lessons</div>
+          <div class="chip chip-2">📝 Auto quizzes</div>
+          <div class="chip chip-3">📶 Works offline</div>
+        </div>
+        <div class="phone-mockup">
+          <div class="phone-header">
+            <h3>📚 Sikai</h3>
+            <p>Grade 10 Dashboard</p>
+          </div>
+          <div class="phone-subject-grid">
+            <div class="phone-subject">
+              <div class="phone-subject-icon">🔬</div>
+              <div class="phone-subject-name">विज्ञान</div>
+              <div class="phone-subject-lessons">12 lessons</div>
+            </div>
+            <div class="phone-subject">
+              <div class="phone-subject-icon">➗</div>
+              <div class="phone-subject-name">गणित</div>
+              <div class="phone-subject-lessons">18 lessons</div>
+            </div>
+            <div class="phone-subject">
+              <div class="phone-subject-icon">🌍</div>
+              <div class="phone-subject-name">सामाजिक</div>
+              <div class="phone-subject-lessons">10 lessons</div>
+            </div>
+            <div class="phone-subject">
+              <div class="phone-subject-icon">🏛️</div>
+              <div class="phone-subject-name">लोक सेवा</div>
+              <div class="phone-subject-lessons">25 lessons</div>
+            </div>
+          </div>
+          <div class="phone-ai-box">
+            <div class="phone-ai-icon">🤖</div>
+            <div>
+              <div class="phone-ai-text">Ask Sikai AI Tutor</div>
+              <div class="phone-ai-sub">कुनै पनि प्रश्न सोध्नुस्...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-title reveal">From topic to full course<br/><em style="font-weight:300;font-style:italic;">in under 30 seconds.</em></h2>
+
+    <div class="steps">
+      <div class="step reveal" style="transition-delay:0.1s">
+        <div class="step-num">01</div>
+        <div class="step-icon">✍️</div>
+        <div class="step-title">Type any topic</div>
+        <div class="step-desc">Type "Photosynthesis", "Lok Sewa GK", "Python Programming" — anything you want to learn.</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.2s">
+        <div class="step-num">02</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Choose your level</div>
+        <div class="step-desc">Tell Sikai if you're a Beginner, Intermediate, or Advanced learner. It adapts everything for you.</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.3s">
+        <div class="step-num">03</div>
+        <div class="step-icon">🧠</div>
+        <div class="step-title">AI builds your course</div>
+        <div class="step-desc">Sikai's AI researches open sources and creates a structured, module-by-module course with Nepal-based examples.</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.4s">
+        <div class="step-num">04</div>
+        <div class="step-icon">🎉</div>
+        <div class="step-title">Learn, quiz & track</div>
+        <div class="step-desc">Read, listen in Nepali audio, take quizzes, and track your progress day by day.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI DEMO -->
+<section class="ai-demo-section">
+  <div class="section-inner">
+    <div class="ai-demo-layout">
+      <div>
+        <div class="section-label reveal">AI Tutor</div>
+        <h2 class="section-title reveal">Your personal teacher,<br/><em style="font-weight:300;font-style:italic;">always available.</em></h2>
+        <p class="section-desc reveal">Ask any doubt in Nepali or English. Sikai explains with local examples, stories, and the patience of the world's best teacher.</p>
+
+        <div class="feature-list">
+          <div class="feature-item reveal">
+            <div class="feature-icon-box fi-orange">💬</div>
+            <div class="feature-item-text">
+              <h4>Nepali + English Mix</h4>
+              <p>Answers in the way Nepali students actually think — mixed language, local examples.</p>
+            </div>
+          </div>
+          <div class="feature-item reveal">
+            <div class="feature-icon-box fi-teal">🎧</div>
+            <div class="feature-item-text">
+              <h4>Voice Learning Mode</h4>
+              <p>Every lesson can be narrated aloud — perfect for low-literacy users or commuters.</p>
+            </div>
+          </div>
+          <div class="feature-item reveal">
+            <div class="feature-icon-box fi-red">📶</div>
+            <div class="feature-item-text">
+              <h4>Works Offline Too</h4>
+              <p>Last 5 lessons cached automatically. No internet? No problem. Learn anyway.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="ai-window">
+          <div class="ai-window-header">
+            <div class="window-dots">
+              <div class="window-dot"></div>
+              <div class="window-dot"></div>
+              <div class="window-dot"></div>
+            </div>
+            <span class="window-title">Sikai AI Tutor — Ask anything</span>
+          </div>
+          <div class="ai-chat" id="chatBox">
+            <div class="chat-msg ai">
+              <div class="ai-label">🤖 Sikai</div>
+              नमस्ते! म Sikai हुँ — तपाईंको AI teacher। आज के सिक्न चाहनुहुन्छ? 😊
+            </div>
+            <div class="chat-msg user">Photosynthesis के हो? Simple मा explain गर्नुस्।</div>
+            <div class="chat-msg ai" id="aiResponse" style="display:none">
+              <div class="ai-label">🤖 Sikai</div>
+              <span id="aiText"></span>
+            </div>
+            <div class="chat-typing" id="typingIndicator" style="display:none">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+          </div>
+          <div class="ai-input-row">
+            <input class="ai-input" id="chatInput" placeholder="आफ्नो प्रश्न लेख्नुस्... (Ask in Nepali or English)" onkeydown="if(event.key==='Enter') sendChat()"/>
+            <button class="ai-send" onclick="sendChat()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBJECTS -->
+<section id="subjects">
+  <div class="section-inner">
+    <div class="section-label reveal">All Subjects</div>
+    <h2 class="section-title reveal">Every topic a Nepali<br/><em style="font-weight:300;font-style:italic;">student needs.</em></h2>
+
+    <div class="subjects-grid">
+      <div class="subject-card reveal" style="transition-delay:0.05s" onclick="openModal()">
+        <div class="subject-emoji">🔬</div>
+        <div class="subject-name">Science</div>
+        <div class="subject-name-np">विज्ञान</div>
+        <div class="subject-desc">Biology, Chemistry, Physics — explained with Nepal examples. From Himalayan ecology to chemical reactions.</div>
+        <div class="subject-meta">
+          <span class="subject-tag">Grade 6–12</span>
+          <span class="subject-tag">SEE Ready</span>
+        </div>
+      </div>
+      <div class="subject-card reveal" style="transition-delay:0.1s" onclick="openModal()">
+        <div class="subject-emoji">➗</div>
+        <div class="subject-name">Mathematics</div>
+        <div class="subject-name-np">गणित</div>
+        <div class="subject-desc">Step-by-step problem solving, from basic arithmetic to trigonometry. Never fear numbers again.</div>
+        <div class="subject-meta">
+          <span class="subject-tag">Grade 6–12</span>
+          <span class="subject-tag">+2 Level</span>
+        </div>
+      </div>
+      <div class="subject-card reveal" style="transition-delay:0.15s" onclick="openModal()">
+        <div class="subject-emoji">🌍</div>
+        <div class="subject-name">Social Studies</div>
+        <div class="subject-name-np">सामाजिक अध्ययन</div>
+        <div class="subject-desc">Nepal's geography, history, civics, and culture. Understand your country deeply.</div>
+        <div class="subject-meta">
+          <span class="subject-tag">All Grades</span>
+          <span class="subject-tag">Nepal Focus</span>
+        </div>
+      </div>
+      <div class="subject-card reveal" style="transition-delay:0.2s" onclick="openModal()">
+        <div class="subject-emoji">🏛️</div>
+        <div class="subject-name">Lok Sewa Aayog</div>
+        <div class="subject-name-np">लोक सेवा आयोग</div>
+        <div class="subject-desc">Complete PSC prep — GK, current affairs, Nepali constitution, reasoning. Crack your exam.</div>
+        <div class="subject-meta">
+          <span class="subject-tag">Competitive</span>
+          <span class="subject-tag">Exam Pack</span>
+        </div>
+      </div>
+      <div class="subject-card reveal" style="transition-delay:0.25s" onclick="openModal()">
+        <div class="subject-emoji">💻</div>
+        <div class="subject-name">Programming</div>
+        <div class="subject-name-np">कम्प्युटर विज्ञान</div>
+        <div class="subject-desc">Python, Web Dev, AI basics — career-ready tech skills taught simply from scratch.</div>
+        <div class="subject-meta">
+          <span class="subject-tag">Beginner</span>
+          <span class="subject-tag">Career Skills</span>
+        </div>
+      </div>
+      <div class="subject-card reveal" style="transition-delay:0.3s" onclick="openModal()">
+        <div class="subject-emoji">📖</div>
+        <div class="subject-name">Nepali & English</div>
+        <div class="subject-name-np">नेपाली र अंग्रेजी</div>
+        <div class="subject-desc">Grammar, writing, literature, comprehension — master both languages with confidence.</div>
+        <div class="subject-meta">
+          <span class="subject-tag">All Levels</span>
+          <span class="subject-tag">Language</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEARNING PATH -->
+<section id="path">
+  <div class="section-inner">
+    <div class="section-label reveal">Learning Path</div>
+    <h2 class="section-title reveal">Start where you are.<br/><em style="font-weight:300;font-style:italic;">Grow from there.</em></h2>
+    <p class="section-desc reveal">Every topic is broken into three levels. Sikai places you automatically based on your entry quiz and guides you up the ladder.</p>
+
+    <div class="path-visual">
+      <div class="path-level reveal">
+        <div class="path-level-label">
+          <div class="path-pill pill-beginner">🌱 Beginner</div>
+          <div class="path-level-desc">Foundation concepts. No prior knowledge needed. Plain language, big examples.</div>
+        </div>
+        <div class="path-modules">
+          <div class="path-module done"><span class="path-module-icon">📖</span> What is it?</div>
+          <div class="path-module done"><span class="path-module-icon">🔍</span> Key terms</div>
+          <div class="path-module done"><span class="path-module-icon">🌏</span> Nepal example</div>
+          <div class="path-module"><span class="path-module-icon">🎧</span> Audio lesson</div>
+          <div class="path-module"><span class="path-module-icon">✅</span> Beginner quiz</div>
+        </div>
+      </div>
+      <div class="path-level reveal">
+        <div class="path-level-label">
+          <div class="path-pill pill-intermediate">⚡ Intermediate</div>
+          <div class="path-level-desc">Go deeper. Understand the why and how. Connect concepts together.</div>
+        </div>
+        <div class="path-modules">
+          <div class="path-module"><span class="path-module-icon">🧪</span> Detailed science</div>
+          <div class="path-module"><span class="path-module-icon">📊</span> Diagrams & process</div>
+          <div class="path-module"><span class="path-module-icon">🔗</span> Related concepts</div>
+          <div class="path-module"><span class="path-module-icon">📝</span> Scenario quiz</div>
+        </div>
+      </div>
+      <div class="path-level reveal">
+        <div class="path-level-label">
+          <div class="path-pill pill-advanced">🔥 Advanced</div>
+          <div class="path-level-desc">Exam-ready depth. Critical thinking. Application and analysis.</div>
+        </div>
+        <div class="path-modules">
+          <div class="path-module"><span class="path-module-icon">🧠</span> Critical analysis</div>
+          <div class="path-module"><span class="path-module-icon">📐</span> Formulas & proofs</div>
+          <div class="path-module"><span class="path-module-icon">🏆</span> Exam-style questions</div>
+          <div class="path-module"><span class="path-module-icon">📋</span> Revision summary</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label reveal">Early Feedback</div>
+    <h2 class="section-title reveal">Students across Nepal<br/><em style="font-weight:300;font-style:italic;">are already loving it.</em></h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-quote">"</div>
+        <div class="testimonial-text">SEE को preparation गर्दा Sikai ले धेरै help गर्यो। Science को concept Nepali मा explain गर्दा एकदम सजिलो भयो।</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩</div>
+          <div>
+            <div class="author-name">Priya Shrestha</div>
+            <div class="author-role">Grade 10, Kathmandu</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal" style="transition-delay:0.1s">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-quote">"</div>
+        <div class="testimonial-text">Lok Sewa को तयारी गर्दाखेरि यो app ले GK section मा धेरै confidence दियो। Daily quiz feature is amazing!</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👨</div>
+          <div>
+            <div class="author-name">Bikram Thapa</div>
+            <div class="author-role">PSC Aspirant, Chitwan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal" style="transition-delay:0.2s">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-quote">"</div>
+        <div class="testimonial-text">As a teacher in Dang, internet is slow. But the offline mode means my students can still use Sikai every single day.</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👩‍🏫</div>
+          <div>
+            <div class="author-name">Maya Gurung</div>
+            <div class="author-role">Teacher, Dang District</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner reveal">
+    <div class="section-label" style="text-align:center;">Ready to start?</div>
+    <h2 class="cta-title">Every Nepali student<br/>deserves a <span class="highlight">world-class teacher.</span></h2>
+    <p class="cta-desc">Generate your first AI-powered course for free. No signup needed to try. Works on any phone, any internet speed.</p>
+    <a href="#" class="btn-primary" style="margin: 0 auto; display:inline-flex;" onclick="openModal(); return false;">
+      🚀 Generate My First Course — Free
+    </a>
+    <div class="cta-install-hint">
+      📲 Add to Home Screen for app-like experience · Works offline · No App Store needed
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <strong>सिकाइ Sikai</strong> — Built with ❤️ for Nepal's students.<br/>
+    <span style="font-size:12px;">© 2025 Sikai Learning. Kathmandu, Nepal 🇳🇵</span>
+  </div>
+  <div class="footer-right">
+    <a href="#">About</a>
+    <a href="#">For Schools</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<!-- COURSE GENERATOR MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✨ Generate a Course</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Topic / विषय</label>
+      <input class="form-input" id="topicInput" placeholder="e.g. Photosynthesis, Python Basics, Nepal History..." />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Grade / Level</label>
+      <select class="form-select" id="gradeSelect">
+        <option value="">Select grade or goal...</option>
+        <option value="grade6-8">Grade 6–8 (Middle School)</option>
+        <option value="grade9-10">Grade 9–10 (SEE Preparation)</option>
+        <option value="grade11-12">Grade 11–12 (+2 Level)</option>
+        <option value="loksewa">Lok Sewa Aayog (PSC)</option>
+        <option value="career">Career / Self Learning</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Difficulty Level</label>
+      <div class="level-pills">
+        <button class="level-pill" id="pill-beginner" onclick="selectLevel('beginner')">🌱 Beginner</button>
+        <button class="level-pill" id="pill-intermediate" onclick="selectLevel('intermediate')">⚡ Intermediate</button>
+        <button class="level-pill" id="pill-advanced" onclick="selectLevel('advanced')">🔥 Advanced</button>
+      </div>
+    </div>
+
+    <button class="btn-generate" onclick="generateCourse()" id="generateBtn">
+      <span id="generateBtnText">🧠 Generate My Course</span>
+    </button>
+
+    <div class="course-output" id="courseOutput">
+      <div class="course-output-title" id="courseOutputTitle"></div>
+      <div class="module-list" id="moduleList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== MODAL ===========
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ========== LEVEL PILLS ===========
+let selectedLevel = '';
+function selectLevel(level) {
+  selectedLevel = level;
+  ['beginner','intermediate','advanced'].forEach(l => {
+    const el = document.getElementById('pill-' + l);
+    el.className = 'level-pill';
+    if(l === level) el.classList.add('active-' + level);
+  });
+}
+
+// ========== COURSE GENERATOR ===========
+const courseData = {
+  photosynthesis: {
+    title: "Photosynthesis — How Plants Make Food",
+    modules: [
+      { name: "Plants Are Like Kitchens", meta: "3 lessons · 15 min · Beginner", icon: "🌿" },
+      { name: "Inside the Leaf — Meet Chloroplast", meta: "4 lessons · 20 min · Intermediate", icon: "🔬" },
+      { name: "Factors That Affect Photosynthesis", meta: "3 lessons · 18 min · Advanced", icon: "☀️" },
+      { name: "Nepal's Forests & Agriculture Link", meta: "2 lessons · 10 min · Application", icon: "🇳🇵" },
+      { name: "Quiz & Revision Summary", meta: "10 questions · 12 min", icon: "📝" }
+    ]
+  },
+  python: {
+    title: "Python Programming — From Zero",
+    modules: [
+      { name: "What is Programming? Why Python?", meta: "2 lessons · 10 min · Beginner", icon: "💡" },
+      { name: "Variables, Data Types & Input", meta: "4 lessons · 25 min · Beginner", icon: "📦" },
+      { name: "If/Else Logic & Loops", meta: "4 lessons · 30 min · Intermediate", icon: "🔁" },
+      { name: "Functions & File Handling", meta: "3 lessons · 22 min · Intermediate", icon: "⚙️" },
+      { name: "Build a Simple Nepali Calculator", meta: "1 project · 20 min · Advanced", icon: "🧮" }
+    ]
+  },
+  loksewa: {
+    title: "Lok Sewa Aayog — Complete Prep",
+    modules: [
+      { name: "Nepal's Constitution 2072 — Key Points", meta: "5 lessons · 35 min", icon: "📜" },
+      { name: "Geography of Nepal — Districts & Zones", meta: "3 lessons · 20 min", icon: "🗺️" },
+      { name: "Nepal's History — Timeline", meta: "4 lessons · 28 min", icon: "⏳" },
+      { name: "Current Affairs — Monthly Update", meta: "Ongoing · Updated weekly", icon: "📰" },
+      { name: "Reasoning & GK Practice Test", meta: "50 MCQs · 45 min", icon: "🏆" }
+    ]
+  }
+};
+
+function generateCourse() {
+  const topic = document.getElementById('topicInput').value.trim();
+  const grade = document.getElementById('gradeSelect').value;
+  const level = selectedLevel;
+
+  if (!topic) {
+    document.getElementById('topicInput').focus();
+    document.getElementById('topicInput').style.borderColor = 'rgba(224,92,42,0.6)';
+    setTimeout(() => document.getElementById('topicInput').style.borderColor = '', 1500);
+    return;
+  }
+
+  const btn = document.getElementById('generateBtn');
+  const btnText = document.getElementById('generateBtnText');
+  btnText.textContent = '⏳ Generating your course...';
+  btn.style.opacity = '0.7';
+  btn.style.cursor = 'not-allowed';
+
+  setTimeout(() => {
+    // Pick matching content or generate generic
+    let data = null;
+    const t = topic.toLowerCase();
+    if (t.includes('photo') || t.includes('plant') || t.includes('photosynthesis')) data = courseData.photosynthesis;
+    else if (t.includes('python') || t.includes('programming') || t.includes('coding')) data = courseData.python;
+    else if (t.includes('lok sewa') || t.includes('psc') || t.includes('loksewa')) data = courseData.loksewa;
+    else {
+      // Generic
+      data = {
+        title: topic.charAt(0).toUpperCase() + topic.slice(1) + " — Complete Course",
+        modules: [
+          { name: "Introduction & Core Concepts", meta: "3 lessons · 15 min · " + (level || "Beginner"), icon: "📖" },
+          { name: "Deep Dive — Key Principles", meta: "4 lessons · 25 min · Intermediate", icon: "🔍" },
+          { name: "Nepal Context & Real Examples", meta: "3 lessons · 18 min · Application", icon: "🇳🇵" },
+          { name: "Advanced Topics & Analysis", meta: "3 lessons · 22 min · Advanced", icon: "🧠" },
+          { name: "Practice Quiz & Revision", meta: "10 questions · 15 min", icon: "✅" }
+        ]
+      };
+    }
+
+    // Render
+    document.getElementById('courseOutputTitle').textContent = "📚 " + data.title;
+    const list = document.getElementById('moduleList');
+    list.innerHTML = '';
+    data.modules.forEach((m, i) => {
+      const div = document.createElement('div');
+      div.className = 'module-item';
+      div.style.animationDelay = (i * 0.08) + 's';
+      div.innerHTML = `
+        <div class="module-num">${i+1}</div>
+        <div>
+          <div class="module-name">${m.icon} ${m.name}</div>
+          <div class="module-meta">${m.meta}</div>
+        </div>
+        <div class="module-arrow">›</div>
+      `;
+      list.appendChild(div);
+    });
+
+    document.getElementById('courseOutput').classList.add('visible');
+    btnText.textContent = '✅ Course Generated! Tap a module to start';
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }, 1800);
+}
+
+// ========== AI CHAT ===========
+const aiReplies = [
+  {
+    trigger: ['photosynthesis', 'photo', 'plant', 'बिरुवा', 'खाना'],
+    response: "राम्रो प्रश्न! 🌿<br/><br/>Photosynthesis भनेको बिरुवाले सूर्यको प्रकाश, पानी, र CO₂ मिलाएर आफ्नो खाना (Glucose) बनाउने process हो।<br/><br/>सजिलो formula:<br/><strong>CO₂ + H₂O + ☀️ → Glucose + O₂</strong><br/><br/>Chitwan को धान खेत देख्नुभएको छ? ती सबै बोटले यही गरिरहेका छन् — र byproduct मा हाम्रो सास (Oxygen) दिइरहेका छन्! 🇳🇵"
+  },
+  {
+    trigger: ['python', 'programming', 'code', 'coding'],
+    response: "Python सिक्न एकदम राम्रो choice गर्नुभयो! 💻<br/><br/>Python एउटा simple language हो जुन real sentences जस्तो पढिन्छ।<br/><br/><strong>पहिलो program:</strong><br/><code style='background:rgba(0,0,0,0.3);padding:6px 10px;border-radius:6px;display:block;margin:8px 0;font-size:12px;'>print('नमस्ते Nepal!')</code><br/>यो run गर्दा screen मा 'नमस्ते Nepal!' आउँछ।<br/><br/>सुरु गर्न चाहनुहुन्छ? Course generate गर्नुस् — Beginner देखि Advanced सम्म सिक्नुहोस् 🚀"
+  },
+  {
+    trigger: ['lok sewa', 'psc', 'लोक सेवा', 'exam'],
+    response: "Lok Sewa को तयारी गर्दैहुनुहुन्छ? 🏛️ Perfect!<br/><br/>Key areas:<br/>• <strong>नेपाल को संविधान 2072</strong> — सबैभन्दा important<br/>• <strong>Geography</strong> — 77 जिल्ला, 7 प्रदेश<br/>• <strong>Current Affairs</strong> — monthly updates<br/>• <strong>Reasoning & GK</strong> — daily practice<br/><br/>Tip: Daily 10 MCQ practice गर्नुस् — 3 महिनामा confidence आउँछ। चाहनुहुन्छ भने Lok Sewa Pack generate गर्नुस्! 💪"
+  }
+];
+
+const defaultReplies = [
+  "राम्रो प्रश्न! 😊 यो topic सिक्न माथि 'Generate Course' button थिच्नुस् — म तपाईंको लागि पूरा structured course बनाइदिन्छु।",
+  "Interesting! यो बारे विस्तृत जान्न, माथि Course Generator use गर्नुस् — Nepal context सहित सबै explain गर्नेछु।",
+  "नमस्ते! यो topic को लागि म एउटा full learning path बनाइदिन सक्छु। माथि 'Generate My Course' click गर्नुस् — Beginner देखि Advanced सम्म! 🎯"
+];
+
+let replyIndex = 0;
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const chatBox = document.getElementById('chatBox');
+
+  // User message
+  const userDiv = document.createElement('div');
+  userDiv.className = 'chat-msg user';
+  userDiv.textContent = msg;
+  chatBox.appendChild(userDiv);
+
+  input.value = '';
+
+  // Typing indicator
+  const typing = document.getElementById('typingIndicator');
+  typing.style.display = 'flex';
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  setTimeout(() => {
+    typing.style.display = 'none';
+
+    // Find reply
+    const lower = msg.toLowerCase();
+    let reply = null;
+    for (const r of aiReplies) {
+      if (r.trigger.some(t => lower.includes(t))) { reply = r.response; break; }
+    }
+    if (!reply) {
+      reply = defaultReplies[replyIndex % defaultReplies.length];
+      replyIndex++;
+    }
+
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'chat-msg ai';
+    aiDiv.innerHTML = `<div class="ai-label">🤖 Sikai</div>${reply}`;
+    chatBox.appendChild(aiDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }, 1500);
+}
+
+// ========== SCROLL REVEAL ===========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ========== KEYBOARD SHORTCUT ===========
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ========== SERVICE WORKER REGISTRATION ===========
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
+      console.log('[Sikai] Service Worker registered:', reg.scope);
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateBanner();
+          }
+        });
+      });
+    } catch (err) {
+      console.warn('[Sikai] SW registration failed:', err);
+    }
+  });
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
+}
+
+function showUpdateBanner() {
+  const b = document.createElement('div');
+  b.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f0a500,#e05c2a);color:#000;padding:14px 24px;border-radius:100px;font-weight:700;font-size:14px;z-index:9999;cursor:pointer;box-shadow:0 8px 30px rgba(240,165,0,0.4);display:flex;align-items:center;gap:10px;white-space:nowrap;font-family:DM Sans,sans-serif;';
+  b.innerHTML = '🔄 New version available — <u>tap to update</u>';
+  b.onclick = () => window.location.reload();
+  document.body.appendChild(b);
+}
+
+// ========== PWA INSTALL PROMPT ===========
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.createElement('button');
+  btn.textContent = '📲 Install Sikai App';
+  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#f0a500,#e05c2a);color:#000;border:none;padding:12px 22px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:9999;box-shadow:0 8px 24px rgba(240,165,0,0.35);font-family:DM Sans,sans-serif;';
+  btn.onclick = async () => {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    btn.remove();
+  };
+  document.body.appendChild(btn);
+  setTimeout(() => btn.remove(), 15000);
+});
+window.addEventListener('appinstalled', () => { deferredPrompt = null; });
+
+// ========== OFFLINE / ONLINE BANNER ===========
+function showOfflineBanner() {
+  let b = document.getElementById('offlineBanner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'offlineBanner';
+    b.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#1a2535;border:1px solid rgba(255,255,255,0.1);color:#eef2f7;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;font-family:DM Sans,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+    document.body.appendChild(b);
+  }
+  b.innerHTML = '📶 Offline — cached lessons still available';
+  b.style.display = 'flex';
+}
+function hideOfflineBanner() {
+  const b = document.getElementById('offlineBanner');
+  if (b) b.style.display = 'none';
+}
+window.addEventListener('offline', showOfflineBanner);
+window.addEventListener('online', hideOfflineBanner);
+if (!navigator.onLine) showOfflineBanner();
+</script>
+</body>
+</html>

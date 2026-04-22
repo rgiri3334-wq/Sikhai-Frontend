@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0f1923"/>
+<title>Offline — सिकाइ Sikai</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0b1118;
+    color: #eef2f7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.08;
+    pointer-events: none;
+  }
+  .orb1 { width: 400px; height: 400px; background: #f0a500; top: -100px; left: -100px; }
+  .orb2 { width: 300px; height: 300px; background: #e05c2a; bottom: -80px; right: -80px; }
+
+  .card {
+    background: #111a24;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 28px;
+    padding: 52px 40px;
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+  }
+
+  .signal-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    display: block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.95); opacity: 0.7; }
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .nepali-text {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 18px;
+    color: #f0a500;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 15px;
+    color: #7a8fa6;
+    line-height: 1.75;
+    margin-bottom: 32px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #f0a500, #e05c2a);
+    color: #000;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 32px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 24px rgba(240,165,0,0.3);
+    text-decoration: none;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(240,165,0,0.4); }
+
+  .cached-lessons {
+    margin-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding-top: 28px;
+  }
+
+  .cached-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #4a5f75;
+    margin-bottom: 14px;
+  }
+
+  .lesson-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lesson-item {
+    background: #162030;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .lesson-item:hover { background: #1c2d40; }
+
+  .lesson-icon { font-size: 20px; flex-shrink: 0; }
+  .lesson-name { font-size: 13px; font-weight: 600; }
+  .lesson-meta { font-size: 11px; color: #4a5f75; margin-top: 2px; }
+  .lesson-arrow { margin-left: auto; color: #4a5f75; font-size: 14px; }
+
+  .tip-box {
+    margin-top: 24px;
+    background: rgba(240,165,0,0.07);
+    border: 1px solid rgba(240,165,0,0.2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #a07030;
+    line-height: 1.6;
+    text-align: left;
+  }
+  .tip-box strong { color: #f0a500; }
+
+  .logo {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #eef2f7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    background: #e05c2a;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%,100%{ opacity:1; } 50%{ opacity:0.3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="logo">📚 Sikai <span class="status-dot"></span></div>
+
+<div class="card">
+  <span class="signal-icon">📶</span>
+  <h1>You're Offline</h1>
+  <div class="nepali-text">तपाईं अहिले offline हुनुहुन्छ</div>
+  <p>
+    No internet connection detected.<br/>
+    But don't worry — your downloaded lessons<br/>
+    are ready to use right now.
+  </p>
+
+  <button class="btn" onclick="window.location.reload()">
+    🔄 Retry Connection
+  </button>
+
+  <div class="cached-lessons" id="cachedSection">
+    <div class="cached-label">📥 Available Offline</div>
+    <div class="lesson-list" id="lessonList">
+      <!-- Populated by JS from cache -->
+      <a class="lesson-item" href="/sikai.html">
+        <span class="lesson-icon">🔬</span>
+        <div>
+          <div class="lesson-name">Photosynthesis — Beginner</div>
+          <div class="lesson-meta">Science · Grade 9 · 15 min</div>
+        </div>
+        <span class="lesson-arrow">›</span>
+      </a>
+      <a class="lesson-item" href="/sikai.html">
+        <span class="lesson-icon">🗺️</span>
+        <div>
+          <div class="lesson-name">Nepal Geography — Beginner</div>
+          <div class="lesson-meta">Social Studies · All Grades · 20 min</div>
+        </div>
+        <span class="lesson-arrow">›</span>
+      </a>
+      <a class="lesson-item" href="/sikai.html">
+        <span class="lesson-icon">💻</span>
+        <div>
+          <div class="lesson-name">Python Basics — Beginner</div>
+          <div class="lesson-meta">Programming · Beginner · 25 min</div>
+        </div>
+        <span class="lesson-arrow">›</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 Tip:</strong> When you're back online, Sikai automatically downloads
+    your next 5 lessons so you can always study — even in areas with limited
+    internet like remote Nepal.
+  </div>
+</div>
+
+<script>
+// Auto-retry every 10 seconds
+setInterval(async () => {
+  try {
+    const res = await fetch('/manifest.json', { cache: 'no-store' });
+    if (res.ok) window.location.href = '/sikai.html';
+  } catch { /* still offline */ }
+}, 10000);
+
+// Show online banner if connection restored
+window.addEventListener('online', () => {
+  document.querySelector('.signal-icon').textContent = '✅';
+  document.querySelector('h1').textContent = "You're Back Online!";
+  document.querySelector('.nepali-text').textContent = 'Connection restored!';
+  document.querySelector('.nepali-text').style.color = '#3ecfb2';
+  setTimeout(() => window.location.href = '/sikai.html', 1500);
+});
+</script>
+</body>
+</html>
