@@ -1628,7 +1628,8 @@ footer {
 </div>
 
 <script>
-  const BACKEND_URL = "https://sikhai-backend-production.up.railway.app"; 
+const BACKEND_URL = 'https://sikhai-backend-production.up.railway.app';
+
 // ========== MODAL ===========
 function openModal() {
   document.getElementById('modalOverlay').classList.add('open');
@@ -1646,11 +1647,11 @@ function selectLevel(level) {
   ['beginner','intermediate','advanced'].forEach(l => {
     const el = document.getElementById('pill-' + l);
     el.className = 'level-pill';
-    if(l === level) el.classList.add('active-' + level);
+    if (l === level) el.classList.add('active-' + level);
   });
 }
 
-// ========== COURSE GENERATOR ===========
+// ========== LOCAL FALLBACK DATA ===========
 const courseData = {
   photosynthesis: {
     title: "Photosynthesis — How Plants Make Food",
@@ -1684,72 +1685,6 @@ const courseData = {
   }
 };
 
-function generateCourse() {
-  const topic = document.getElementById('topicInput').value.trim();
-  const grade = document.getElementById('gradeSelect').value;
-  const level = selectedLevel;
-
-  if (!topic) {
-    document.getElementById('topicInput').focus();
-    document.getElementById('topicInput').style.borderColor = 'rgba(224,92,42,0.6)';
-    setTimeout(() => document.getElementById('topicInput').style.borderColor = '', 1500);
-    return;
-  }
-
-  const btn = document.getElementById('generateBtn');
-  const btnText = document.getElementById('generateBtnText');
-  btnText.textContent = '⏳ Generating your course...';
-  btn.style.opacity = '0.7';
-  btn.style.cursor = 'not-allowed';
-
-  setTimeout(() => {
-    // Pick matching content or generate generic
-    let data = null;
-    const t = topic.toLowerCase();
-    if (t.includes('photo') || t.includes('plant') || t.includes('photosynthesis')) data = courseData.photosynthesis;
-    else if (t.includes('python') || t.includes('programming') || t.includes('coding')) data = courseData.python;
-    else if (t.includes('lok sewa') || t.includes('psc') || t.includes('loksewa')) data = courseData.loksewa;
-    else {
-      // Generic
-      data = {
-        title: topic.charAt(0).toUpperCase() + topic.slice(1) + " — Complete Course",
-        modules: [
-          { name: "Introduction & Core Concepts", meta: "3 lessons · 15 min · " + (level || "Beginner"), icon: "📖" },
-          { name: "Deep Dive — Key Principles", meta: "4 lessons · 25 min · Intermediate", icon: "🔍" },
-          { name: "Nepal Context & Real Examples", meta: "3 lessons · 18 min · Application", icon: "🇳🇵" },
-          { name: "Advanced Topics & Analysis", meta: "3 lessons · 22 min · Advanced", icon: "🧠" },
-          { name: "Practice Quiz & Revision", meta: "10 questions · 15 min", icon: "✅" }
-        ]
-      };
-    }
-
-    // Render
-    document.getElementById('courseOutputTitle').textContent = "📚 " + data.title;
-    const list = document.getElementById('moduleList');
-    list.innerHTML = '';
-    data.modules.forEach((m, i) => {
-      const div = document.createElement('div');
-      div.className = 'module-item';
-      div.style.animationDelay = (i * 0.08) + 's';
-      div.innerHTML = `
-        <div class="module-num">${i+1}</div>
-        <div>
-          <div class="module-name">${m.icon} ${m.name}</div>
-          <div class="module-meta">${m.meta}</div>
-        </div>
-        <div class="module-arrow">›</div>
-      `;
-      list.appendChild(div);
-    });
-
-    document.getElementById('courseOutput').classList.add('visible');
-    btnText.textContent = '✅ Course Generated! Tap a module to start';
-    btn.style.opacity = '1';
-    btn.style.cursor = 'pointer';
-  }, 1800);
-}
-
-// ========== AI CHAT ===========
 const aiReplies = [
   {
     trigger: ['photosynthesis', 'photo', 'plant', 'बिरुवा', 'खाना'],
@@ -1773,14 +1708,262 @@ const defaultReplies = [
 
 let replyIndex = 0;
 
-function sendChat() {
+// ========== HELPERS ===========
+function normalizeBackendUrl(url) {
+  const withProtocol = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  return withProtocol.replace(/\/+$/, '');
+}
+
+function buildCandidateUrls(paths) {
+  const base = normalizeBackendUrl(BACKEND_URL);
+  return paths.map(path => `${base}${path}`);
+}
+
+async function postToFirstWorkingEndpoint(paths, payload) {
+  const urls = buildCandidateUrls(paths);
+  let lastError = null;
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const contentType = response.headers.get('content-type') || '';
+      let data = null;
+
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const rawText = await response.text();
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          data = { rawText };
+        }
+      }
+
+      if (response.ok) {
+        return { url, data };
+      }
+
+      lastError = new Error(`Request failed (${response.status}) at ${url}`);
+      lastError.responseData = data;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('No backend endpoint responded successfully.');
+}
+
+function getCourseFallback(topic, level) {
+  let data = null;
+  const t = topic.toLowerCase();
+
+  if (t.includes('photo') || t.includes('plant') || t.includes('photosynthesis')) data = courseData.photosynthesis;
+  else if (t.includes('python') || t.includes('programming') || t.includes('coding')) data = courseData.python;
+  else if (t.includes('lok sewa') || t.includes('psc') || t.includes('loksewa')) data = courseData.loksewa;
+  else {
+    data = {
+      title: topic.charAt(0).toUpperCase() + topic.slice(1) + " — Complete Course",
+      modules: [
+        { name: "Introduction & Core Concepts", meta: "3 lessons · 15 min · " + (level || "Beginner"), icon: "📖" },
+        { name: "Deep Dive — Key Principles", meta: "4 lessons · 25 min · Intermediate", icon: "🔍" },
+        { name: "Nepal Context & Real Examples", meta: "3 lessons · 18 min · Application", icon: "🇳🇵" },
+        { name: "Advanced Topics & Analysis", meta: "3 lessons · 22 min · Advanced", icon: "🧠" },
+        { name: "Practice Quiz & Revision", meta: "10 questions · 15 min", icon: "✅" }
+      ]
+    };
+  }
+
+  return data;
+}
+
+function getChatFallback(msg) {
+  const lower = msg.toLowerCase();
+  let reply = null;
+
+  for (const r of aiReplies) {
+    if (r.trigger.some(t => lower.includes(t))) {
+      reply = r.response;
+      break;
+    }
+  }
+
+  if (!reply) {
+    reply = defaultReplies[replyIndex % defaultReplies.length];
+    replyIndex++;
+  }
+
+  return reply;
+}
+
+function extractCoursePayload(data, topic, level) {
+  if (!data || typeof data !== 'object') {
+    return getCourseFallback(topic, level);
+  }
+
+  const possibleTitle =
+    data.title ||
+    data.courseTitle ||
+    data.name ||
+    data.course_name ||
+    data.course?.title ||
+    data.course?.name;
+
+  let modules =
+    data.modules ||
+    data.course?.modules ||
+    data.lessonPlan ||
+    data.lessons ||
+    data.topics;
+
+  if (!Array.isArray(modules) && typeof modules === 'string') {
+    modules = modules
+      .split('
+')
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(name => ({ name, meta: '', icon: '📘' }));
+  }
+
+  if (!Array.isArray(modules) && Array.isArray(data.outline)) {
+    modules = data.outline.map(item => {
+      if (typeof item === 'string') return { name: item, meta: '', icon: '📘' };
+      return {
+        name: item.name || item.title || item.module || 'Module',
+        meta: item.meta || item.description || item.duration || '',
+        icon: item.icon || '📘'
+      };
+    });
+  }
+
+  if (!Array.isArray(modules) || modules.length === 0) {
+    return getCourseFallback(topic, level);
+  }
+
+  return {
+    title: possibleTitle || `${topic.charAt(0).toUpperCase() + topic.slice(1)} — Complete Course`,
+    modules: modules.map((m, idx) => {
+      if (typeof m === 'string') {
+        return { name: m, meta: '', icon: '📘' };
+      }
+      return {
+        name: m.name || m.title || m.module || `Module ${idx + 1}`,
+        meta: m.meta || m.description || m.duration || m.level || '',
+        icon: m.icon || '📘'
+      };
+    })
+  };
+}
+
+function extractChatReply(data, msg) {
+  if (!data) return getChatFallback(msg);
+
+  if (typeof data === 'string') return data;
+
+  const reply =
+    data.reply ||
+    data.response ||
+    data.answer ||
+    data.message ||
+    data.output ||
+    data.text ||
+    data.content?.[0]?.text ||
+    data.data?.reply ||
+    data.result?.reply;
+
+  return reply || getChatFallback(msg);
+}
+
+function renderCourseOutput(data) {
+  document.getElementById('courseOutputTitle').textContent = "📚 " + data.title;
+  const list = document.getElementById('moduleList');
+  list.innerHTML = '';
+
+  data.modules.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'module-item';
+    div.style.animationDelay = (i * 0.08) + 's';
+    div.innerHTML = `
+      <div class="module-num">${i + 1}</div>
+      <div>
+        <div class="module-name">${m.icon || '📘'} ${m.name}</div>
+        <div class="module-meta">${m.meta || ''}</div>
+      </div>
+      <div class="module-arrow">›</div>
+    `;
+    list.appendChild(div);
+  });
+
+  document.getElementById('courseOutput').classList.add('visible');
+}
+
+function appendAIMessage(html) {
+  const chatBox = document.getElementById('chatBox');
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'chat-msg ai';
+  aiDiv.innerHTML = `<div class="ai-label">🤖 Sikai</div>${html}`;
+  chatBox.appendChild(aiDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ========== COURSE GENERATOR ===========
+async function generateCourse() {
+  const topic = document.getElementById('topicInput').value.trim();
+  const grade = document.getElementById('gradeSelect').value;
+  const level = selectedLevel;
+
+  if (!topic) {
+    document.getElementById('topicInput').focus();
+    document.getElementById('topicInput').style.borderColor = 'rgba(224,92,42,0.6)';
+    setTimeout(() => document.getElementById('topicInput').style.borderColor = '', 1500);
+    return;
+  }
+
+  const btn = document.getElementById('generateBtn');
+  const btnText = document.getElementById('generateBtnText');
+  btnText.textContent = '⏳ Generating your course...';
+  btn.style.opacity = '0.7';
+  btn.style.cursor = 'not-allowed';
+
+  try {
+    const { data } = await postToFirstWorkingEndpoint(
+      [
+        '/api/generate-course',
+        '/api/generateCourse',
+        '/generate-course',
+        '/generateCourse',
+        '/api/course/generate'
+      ],
+      { topic, grade, level }
+    );
+
+    const course = extractCoursePayload(data, topic, level);
+    renderCourseOutput(course);
+    btnText.textContent = '✅ Course Generated! Tap a module to start';
+  } catch (err) {
+    console.warn('[Sikai] Backend course generation failed, using fallback.', err);
+    const fallback = getCourseFallback(topic, level);
+    renderCourseOutput(fallback);
+    btnText.textContent = '✅ Course Generated! Tap a module to start';
+  } finally {
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
+}
+
+// ========== AI CHAT ===========
+async function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
   if (!msg) return;
 
   const chatBox = document.getElementById('chatBox');
 
-  // User message
   const userDiv = document.createElement('div');
   userDiv.className = 'chat-msg user';
   userDiv.textContent = msg;
@@ -1788,36 +1971,37 @@ function sendChat() {
 
   input.value = '';
 
-  // Typing indicator
   const typing = document.getElementById('typingIndicator');
   typing.style.display = 'flex';
   chatBox.scrollTop = chatBox.scrollHeight;
 
-  setTimeout(() => {
+  try {
+    const { data } = await postToFirstWorkingEndpoint(
+      [
+        '/api/chat',
+        '/chat',
+        '/api/ask',
+        '/ask',
+        '/api/tutor',
+        '/tutor'
+      ],
+      { message: msg, prompt: msg, query: msg }
+    );
+
     typing.style.display = 'none';
-
-    // Find reply
-    const lower = msg.toLowerCase();
-    let reply = null;
-    for (const r of aiReplies) {
-      if (r.trigger.some(t => lower.includes(t))) { reply = r.response; break; }
-    }
-    if (!reply) {
-      reply = defaultReplies[replyIndex % defaultReplies.length];
-      replyIndex++;
-    }
-
-    const aiDiv = document.createElement('div');
-    aiDiv.className = 'chat-msg ai';
-    aiDiv.innerHTML = `<div class="ai-label">🤖 Sikai</div>${reply}`;
-    chatBox.appendChild(aiDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }, 1500);
+    appendAIMessage(extractChatReply(data, msg));
+  } catch (err) {
+    console.warn('[Sikai] Backend chat failed, using fallback.', err);
+    typing.style.display = 'none';
+    appendAIMessage(getChatFallback(msg));
+  }
 }
 
 // ========== SCROLL REVEAL ===========
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
 }, { threshold: 0.1 });
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
@@ -1874,29 +2058,22 @@ window.addEventListener('beforeinstallprompt', e => {
     btn.remove();
   };
   document.body.appendChild(btn);
-  setTimeout(() => btn.remove(), 15000);
 });
-window.addEventListener('appinstalled', () => { deferredPrompt = null; });
 
-// ========== OFFLINE / ONLINE BANNER ===========
-function showOfflineBanner() {
-  let b = document.getElementById('offlineBanner');
-  if (!b) {
-    b = document.createElement('div');
-    b.id = 'offlineBanner';
-    b.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#1a2535;border:1px solid rgba(255,255,255,0.1);color:#eef2f7;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;font-family:DM Sans,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
-    document.body.appendChild(b);
+// ========== SHORTCUT ACTION HANDLING ===========
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get('action');
+
+  if (action === 'generate') {
+    openModal();
+  } else if (action === 'tutor') {
+    document.getElementById('chatInput')?.focus();
+    document.getElementById('chatBox')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if (action === 'quiz') {
+    document.getElementById('path')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  b.innerHTML = '📶 Offline — cached lessons still available';
-  b.style.display = 'flex';
-}
-function hideOfflineBanner() {
-  const b = document.getElementById('offlineBanner');
-  if (b) b.style.display = 'none';
-}
-window.addEventListener('offline', showOfflineBanner);
-window.addEventListener('online', hideOfflineBanner);
-if (!navigator.onLine) showOfflineBanner();
+});
 </script>
 </body>
 </html>
