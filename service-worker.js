@@ -22,7 +22,7 @@ const API_CACHE      = `sikai-api-${APP_VERSION}`;
 
 // Files to cache immediately on install (App Shell)
 const SHELL_FILES = [
-  '/sikai.html',
+  '/',
   '/manifest.json',
   '/offline.html',
   // Google Fonts preloaded
@@ -257,7 +257,7 @@ async function shellWithOfflineFallback(request) {
     if (cached) return cached;
 
     // Fall back to main app shell
-    const shell = await cache.match('/sikai.html');
+    const shell = await cache.match('/');
     if (shell) return shell;
 
     // Last resort: offline page
@@ -414,7 +414,7 @@ self.addEventListener('push', event => {
       icon: '/icons/icon-192.png',
       badge: '/icons/icon-72.png',
       tag: 'daily-reminder',
-      url: '/sikai.html?action=quiz'
+      url: '/'?action=quiz'
     };
   }
 
@@ -424,7 +424,7 @@ self.addEventListener('push', event => {
       icon: data.icon || '/icons/icon-192.png',
       badge: data.badge || '/icons/icon-72.png',
       tag: data.tag || 'sikai-notification',
-      data: { url: data.url || '/sikai.html' },
+      data: { url: data.url || '/' },
       actions: [
         { action: 'open',    title: '📖 Open Sikai' },
         { action: 'dismiss', title: 'Later'         }
@@ -440,7 +440,7 @@ self.addEventListener('notificationclick', event => {
 
   if (event.action === 'dismiss') return;
 
-  const targetURL = event.notification.data?.url || '/sikai.html';
+  const targetURL = event.notification.data?.url || '/';
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
