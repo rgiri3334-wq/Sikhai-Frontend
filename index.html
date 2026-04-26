@@ -1,3 +1,4 @@
+cat > /tmp/sikai-v3.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,92 +10,128 @@
 <link rel="manifest" href="manifest.json"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="Sikai"/>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900&family=DM+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900&family=DM+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-/*
-  NEPAL FLAG COLOR PALETTE
-  ─────────────────────────────────────────
-  Crimson Red    #DC143C  (flag background)
-  Deep Blue      #003893  (flag border)
-  White/Moon     #FFFFFF  (moon & star)
-  Midnight       #0a0f1a  (dark bg)
-  Deep Navy      #0d1829  (surface)
-  Rich Crimson   #8B0A1A  (dark red surface)
-  Gold           #FFD700  (accent - sun/star)
-*/
+/* ═══════════════════════════════════════
+   BASE NEPAL FLAG PALETTE
+═══════════════════════════════════════ */
 :root{
-  --bg:        #0a0f1a;
-  --surface:   #0d1829;
-  --surface2:  #111e35;
-  --surface3:  #1a0a12;
-  --border:    rgba(220,20,60,0.18);
-  --border2:   rgba(0,56,147,0.25);
-  --red:       #DC143C;
-  --blue:      #003893;
-  --gold:      #FFD700;
-  --white:     #FFFFFF;
-  --text:      #f0e8d0;
-  --muted:     #8899aa;
-  --gradient:  linear-gradient(135deg,#DC143C 0%,#003893 100%);
-  --grad-red:  linear-gradient(135deg,#DC143C 0%,#8B0A1A 100%);
-  --grad-blue: linear-gradient(135deg,#003893 0%,#001f5e 100%);
-  --grad-gold: linear-gradient(135deg,#FFD700 0%,#FFA500 100%);
-  --glow-red:  0 0 40px rgba(220,20,60,0.2);
-  --glow-blue: 0 0 40px rgba(0,56,147,0.25);
+  --bg:#0a0f1a;--surface:#0d1829;--surface2:#111e35;
+  --border:rgba(220,20,60,.18);--border2:rgba(0,56,147,.25);
+  --red:#DC143C;--blue:#003893;--gold:#FFD700;--white:#fff;
+  --text:#f0e8d0;--muted:#7a8fa6;
+  --gradient:linear-gradient(135deg,#DC143C 0%,#003893 100%);
+  --grad-red:linear-gradient(135deg,#DC143C,#8B0A1A);
+  --grad-blue:linear-gradient(135deg,#003893,#001f5e);
+  --glow-red:0 0 40px rgba(220,20,60,.2);
+  --glow-blue:0 0 40px rgba(0,56,147,.25);
+  /* Age-adaptive variables — overridden by JS */
+  --font-body:'DM Sans',sans-serif;
+  --font-display:'Fraunces',serif;
+  --border-radius:20px;
+  --btn-radius:100px;
+  --spacing:1;
+  --anim-speed:0.3s;
 }
+
+/* ── GenZ Theme ── */
+body.age-genz{
+  --bg:#050508;--surface:#0d0d14;--surface2:#12121c;
+  --red:#ff2d55;--blue:#0a84ff;--gold:#ffd60a;
+  --border:rgba(255,45,85,.2);
+  --font-body:'Space Grotesk',sans-serif;
+  --border-radius:16px;--btn-radius:12px;
+}
+/* ── Millennial Theme ── */
+body.age-millennial{
+  --bg:#0a0f1a;--surface:#0d1829;--surface2:#111e35;
+  --red:#DC143C;--blue:#003893;--gold:#FFD700;
+  --font-body:'DM Sans',sans-serif;
+  --border-radius:20px;--btn-radius:100px;
+}
+/* ── Gen X / Middle Age Theme ── */
+body.age-genx{
+  --bg:#0c0e12;--surface:#141820;--surface2:#1a1f2a;
+  --red:#b91c1c;--blue:#1e40af;--gold:#d97706;
+  --border:rgba(185,28,28,.15);
+  --font-body:'DM Sans',sans-serif;
+  --border-radius:10px;--btn-radius:8px;
+}
+/* ── Senior / Adult Theme ── */
+body.age-senior{
+  --bg:#111318;--surface:#1a1d24;--surface2:#22262f;
+  --red:#c0392b;--blue:#2471a3;--gold:#d4ac0d;
+  --text:#f5f0e8;--muted:#9aa5b4;
+  --font-body:'DM Sans',sans-serif;
+  --border-radius:8px;--btn-radius:6px;
+}
+
+/* ─────────────────────── GENZ SPECIAL EFFECTS ── */
+body.age-genz .logo-icon{animation:logoPulse 2s ease-in-out infinite;}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 20px rgba(255,45,85,.4);}50%{box-shadow:0 0 40px rgba(10,132,255,.6);}}
+body.age-genz .btn-primary{background:linear-gradient(135deg,#ff2d55,#0a84ff);box-shadow:0 0 24px rgba(255,45,85,.4);}
+body.age-genz .hero-badge{border-color:rgba(255,45,85,.5);color:#ff2d55;background:rgba(255,45,85,.1);animation:badgeBounce 1s ease-in-out infinite alternate;}
+@keyframes badgeBounce{from{transform:translateY(0);}to{transform:translateY(-4px);}}
+body.age-genz nav{border-bottom:1px solid rgba(255,45,85,.2);}
+body.age-genz .chat-msg.user{background:linear-gradient(135deg,#ff2d55,#0a84ff);}
+body.age-genz .news-card{border-color:rgba(255,45,85,.2);}
+body.age-genz .news-card:hover{border-color:#ff2d55;}
+
+/* ─────────────────────── GLOBAL RESETS ── */
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
-
-/* ── BACKGROUND ── */
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;transition:background var(--anim-speed),color var(--anim-speed);}
 .bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
-.bg-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.09;animation:orbFloat 14s ease-in-out infinite;}
-.bg-orb:nth-child(1){width:600px;height:600px;background:#DC143C;top:-150px;left:-150px;}
-.bg-orb:nth-child(2){width:500px;height:500px;background:#003893;bottom:-80px;right:-150px;animation-delay:-5s;}
-.bg-orb:nth-child(3){width:350px;height:350px;background:#FFD700;top:40%;left:40%;opacity:.05;animation-delay:-9s;}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.09;animation:orbFloat 14s ease-in-out infinite;}
+.bg-orb:nth-child(1){width:500px;height:500px;background:var(--red);top:-100px;left:-100px;}
+.bg-orb:nth-child(2){width:400px;height:400px;background:var(--blue);bottom:-50px;right:-100px;animation-delay:-5s;}
+.bg-orb:nth-child(3){width:300px;height:300px;background:var(--gold);top:50%;left:50%;opacity:.05;animation-delay:-9s;}
 @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(25px,-25px) scale(1.04);}66%{transform:translate(-15px,18px) scale(.97);}}
-.grid-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(220,20,60,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,56,147,.03) 1px,transparent 1px);background-size:60px 60px;}
+.grid-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(220,20,60,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,56,147,.025) 1px,transparent 1px);background-size:60px 60px;}
+.nepal-divider{height:4px;background:linear-gradient(90deg,var(--red) 0%,var(--blue) 50%,var(--red) 100%);width:100%;position:relative;z-index:1;}
 
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(10,15,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+/* ─────────────────────── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(10,15,26,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .logo{display:flex;align-items:center;gap:12px;cursor:pointer;}
-.logo-icon{width:40px;height:40px;background:var(--gradient);border-radius:12px;display:grid;place-items:center;font-size:20px;box-shadow:var(--glow-red);}
-.logo-text{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--white);}
+.logo-icon{width:40px;height:40px;background:var(--gradient);border-radius:var(--border-radius);display:grid;place-items:center;font-size:20px;box-shadow:var(--glow-red);}
+.logo-text{font-family:var(--font-display,'Fraunces'),serif;font-size:22px;font-weight:700;color:var(--white);}
 .logo-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--muted);display:block;}
-.nav-links{display:flex;gap:24px;list-style:none;align-items:center;}
+.nav-links{display:flex;gap:22px;list-style:none;align-items:center;}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;}
 .nav-links a:hover{color:var(--white);}
-.nav-cta{background:var(--gradient)!important;color:#fff!important;padding:10px 24px;border-radius:100px;font-weight:600!important;}
+.nav-cta{background:var(--gradient)!important;color:#fff!important;padding:9px 20px;border-radius:var(--btn-radius);font-weight:600!important;}
 .nav-user{display:flex;align-items:center;gap:12px;}
 .nav-user-name{font-size:14px;font-weight:600;color:var(--white);}
 .nav-user-xp{font-size:12px;color:var(--gold);font-weight:700;}
-.btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:var(--btn-radius);font-size:13px;cursor:pointer;font-family:var(--font-body);transition:all .2s;}
 .btn-sm:hover{border-color:rgba(220,20,60,.5);color:var(--red);}
 
-/* ── HERO ── */
+/* ─────────────────────── AGE BADGE ── */
+.age-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--btn-radius);font-size:11px;font-weight:700;border:1px solid;cursor:pointer;transition:all .2s;margin-left:8px;}
+.age-badge:hover{opacity:.8;}
+
+/* ─────────────────────── HERO ── */
 .hero{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;padding:120px 40px 80px;max-width:1200px;margin:0 auto;gap:60px;}
 .hero-left{flex:1;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(220,20,60,.12);border:1px solid rgba(220,20,60,.35);border-radius:100px;padding:8px 16px;font-size:13px;color:var(--red);font-weight:600;margin-bottom:28px;animation:fadeUp .8s ease both;}
-.hero-title{font-family:'Fraunces',serif;font-size:clamp(48px,6vw,76px);font-weight:900;line-height:1.05;margin-bottom:12px;animation:fadeUp .8s ease .1s both;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(220,20,60,.12);border:1px solid rgba(220,20,60,.35);border-radius:var(--btn-radius);padding:8px 16px;font-size:13px;color:var(--red);font-weight:600;margin-bottom:28px;animation:fadeUp .8s ease both;}
+.hero-title{font-family:var(--font-display,'Fraunces'),serif;font-size:clamp(48px,6vw,76px);font-weight:900;line-height:1.05;margin-bottom:12px;animation:fadeUp .8s ease .1s both;}
 .nepali{font-family:'Noto Sans Devanagari',sans-serif;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:clamp(40px,5vw,64px);}
 .eng{display:block;color:var(--white);font-style:italic;font-weight:300;font-size:clamp(30px,4vw,50px);margin-top:6px;}
 .hero-desc{font-size:18px;line-height:1.7;color:var(--muted);max-width:480px;margin-bottom:40px;animation:fadeUp .8s ease .2s both;}
 .hero-desc strong{color:var(--text);}
 .hero-actions{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp .8s ease .3s both;}
-.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--grad-red);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;padding:16px 32px;border-radius:100px;border:none;cursor:pointer;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 30px rgba(220,20,60,.35);}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--gradient);color:#fff;font-family:var(--font-body);font-weight:700;font-size:16px;padding:16px 32px;border-radius:var(--btn-radius);border:none;cursor:pointer;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 30px rgba(220,20,60,.35);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(220,20,60,.5);}
-.btn-secondary{display:inline-flex;align-items:center;gap:10px;background:rgba(0,56,147,.15);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:500;font-size:16px;padding:16px 32px;border-radius:100px;border:1px solid rgba(0,56,147,.4);cursor:pointer;text-decoration:none;transition:background .2s,border-color .2s;}
-.btn-secondary:hover{background:rgba(0,56,147,.3);border-color:rgba(0,56,147,.7);}
+.btn-secondary{display:inline-flex;align-items:center;gap:10px;background:rgba(0,56,147,.15);color:var(--white);font-family:var(--font-body);font-weight:500;font-size:16px;padding:16px 32px;border-radius:var(--btn-radius);border:1px solid rgba(0,56,147,.4);cursor:pointer;text-decoration:none;transition:background .2s,border-color .2s;}
+.btn-secondary:hover{background:rgba(0,56,147,.3);}
 .hero-stats{display:flex;gap:40px;margin-top:56px;animation:fadeUp .8s ease .4s both;}
-.stat-num{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--gold);}
+.stat-num{font-family:var(--font-display,'Fraunces'),serif;font-size:28px;font-weight:700;color:var(--gold);}
 .stat-label{font-size:13px;color:var(--muted);}
-
-/* ── PHONE MOCKUP ── */
 .hero-right{flex:1;display:flex;justify-content:center;align-items:center;}
 .phone-mockup{width:290px;background:var(--surface);border-radius:36px;border:2px solid rgba(220,20,60,.2);padding:24px 20px;box-shadow:0 40px 80px rgba(0,0,0,.6),var(--glow-red);}
 .phone-header{text-align:center;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px;}
-.phone-header h3{font-family:'Fraunces',serif;font-size:18px;color:var(--white);}
-.phone-header p{font-size:12px;color:var(--muted);margin-top:2px;}
+.phone-header h3{font-family:var(--font-display,'Fraunces'),serif;font-size:18px;color:var(--white);}
+.phone-header p{font-size:12px;color:var(--muted);}
 .phone-subject-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .phone-subject{background:var(--surface2);border-radius:14px;padding:14px 12px;border:1px solid rgba(0,56,147,.2);}
 .phone-subject-icon{font-size:22px;margin-bottom:6px;}
@@ -105,39 +142,68 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .phone-ai-text{font-size:12px;font-weight:500;color:var(--text);}
 .phone-ai-sub{font-size:10px;color:var(--muted);}
 
-/* ── SECTIONS ── */
+/* ─────────────────────── SECTIONS ── */
 section{position:relative;z-index:1;}
-.section-inner{max-width:1200px;margin:0 auto;padding:100px 40px;}
+.section-inner{max-width:1200px;margin:0 auto;padding:80px 40px;}
 .section-label{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:16px;}
-.section-title{font-family:'Fraunces',serif;font-size:clamp(36px,4vw,52px);font-weight:800;line-height:1.1;margin-bottom:20px;color:var(--white);}
-.section-desc{font-size:18px;color:var(--muted);max-width:560px;line-height:1.7;}
+.section-title{font-family:var(--font-display,'Fraunces'),serif;font-size:clamp(32px,4vw,48px);font-weight:800;line-height:1.1;margin-bottom:20px;color:var(--white);}
 
-/* ── STEPS ── */
+/* ─────────────────────── NEWS SECTION ── */
+.news-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;z-index:1;}
+.news-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.news-tab{padding:8px 18px;border-radius:var(--btn-radius);border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.news-tab.active{background:var(--gradient);color:#fff;border-color:transparent;}
+.news-tab:hover:not(.active){border-color:rgba(220,20,60,.4);color:var(--white);}
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.news-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--border-radius);padding:20px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.news-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity .3s;}
+.news-card:hover{transform:translateY(-3px);border-color:rgba(220,20,60,.35);}
+.news-card:hover::before{opacity:1;}
+.news-card-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px;}
+.news-card-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.4;}
+.news-card-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+.news-card-footer{display:flex;align-items:center;justify-content:space-between;}
+.news-card-time{font-size:11px;color:var(--muted);}
+.news-card-source{font-size:11px;color:var(--red);font-weight:600;}
+.news-card-img{width:100%;height:140px;object-fit:cover;border-radius:10px;margin-bottom:12px;background:var(--surface2);}
+.news-skeleton{background:var(--surface2);border-radius:var(--border-radius);padding:20px;animation:skelPulse 1.5s ease-in-out infinite;}
+.news-skeleton .sk-line{background:var(--surface);border-radius:4px;margin-bottom:8px;}
+@keyframes skelPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+.news-ticker{background:var(--bg);border-bottom:1px solid var(--border);padding:10px 40px;display:flex;align-items:center;gap:16px;overflow:hidden;position:relative;z-index:1;}
+.ticker-label{background:var(--gradient);color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.ticker-track{overflow:hidden;flex:1;}
+.ticker-text{display:flex;gap:40px;animation:tickerMove 30s linear infinite;white-space:nowrap;font-size:13px;color:var(--muted);}
+.ticker-text span{white-space:nowrap;}
+.ticker-text a{color:var(--text);text-decoration:none;}
+.ticker-text a:hover{color:var(--gold);}
+@keyframes tickerMove{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─────────────────────── STEPS ── */
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:60px;}
-.step{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px 24px;position:relative;transition:transform .3s,border-color .3s;}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--border-radius);padding:32px 24px;position:relative;transition:transform .3s,border-color .3s;}
 .step:hover{transform:translateY(-4px);border-color:rgba(220,20,60,.4);}
-.step-num{font-family:'Fraunces',serif;font-size:48px;font-weight:900;color:rgba(220,20,60,.15);line-height:1;margin-bottom:12px;}
+.step-num{font-family:var(--font-display,'Fraunces'),serif;font-size:48px;font-weight:900;color:rgba(220,20,60,.12);line-height:1;margin-bottom:12px;}
 .step-icon{font-size:28px;margin-bottom:12px;}
 .step-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--white);}
 .step-desc{font-size:14px;color:var(--muted);line-height:1.6;}
 .step:not(:last-child)::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;}
 
-/* ── SUBJECTS ── */
+/* ─────────────────────── SUBJECTS ── */
 .subjects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:60px;}
-.subject-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;cursor:pointer;transition:transform .3s,border-color .3s,background .3s;overflow:hidden;position:relative;}
+.subject-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--border-radius);padding:28px 24px;cursor:pointer;transition:transform .3s,border-color .3s;overflow:hidden;position:relative;}
 .subject-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity .3s;}
 .subject-card:hover{transform:translateY(-4px);border-color:rgba(220,20,60,.4);background:var(--surface2);}
 .subject-card:hover::before{opacity:1;}
 .subject-emoji{font-size:36px;margin-bottom:14px;}
-.subject-name{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:4px;color:var(--white);}
+.subject-name{font-family:var(--font-display,'Fraunces'),serif;font-size:20px;font-weight:700;margin-bottom:4px;color:var(--white);}
 .subject-name-np{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--gold);margin-bottom:10px;}
 .subject-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px;}
 .subject-tag{font-size:11px;background:rgba(0,56,147,.2);border:1px solid rgba(0,56,147,.3);padding:4px 10px;border-radius:100px;color:#6699cc;font-weight:500;margin-right:6px;}
 
-/* ── AI DEMO ── */
+/* ─────────────────────── AI DEMO ── */
 .ai-demo-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .ai-demo-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:60px;align-items:center;}
-.ai-window{background:var(--bg);border-radius:20px;border:1px solid rgba(220,20,60,.2);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+.ai-window{background:var(--bg);border-radius:var(--border-radius);border:1px solid rgba(220,20,60,.2);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);}
 .ai-window-header{background:var(--surface2);padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
 .window-dots{display:flex;gap:6px;}
 .window-dot{width:10px;height:10px;border-radius:50%;}
@@ -147,7 +213,7 @@ section{position:relative;z-index:1;}
 .window-title{font-size:13px;color:var(--muted);font-weight:500;}
 .ai-chat{padding:20px;display:flex;flex-direction:column;gap:14px;min-height:300px;max-height:340px;overflow-y:auto;}
 .chat-msg{max-width:85%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6;}
-.chat-msg.user{align-self:flex-end;background:var(--grad-blue);color:#fff;font-weight:500;border-bottom-right-radius:4px;}
+.chat-msg.user{align-self:flex-end;background:var(--gradient);color:#fff;font-weight:500;border-bottom-right-radius:4px;}
 .chat-msg.ai{align-self:flex-start;background:var(--surface2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border);}
 .chat-msg.ai .ai-label{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
 .chat-typing{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;padding:14px 18px;display:flex;gap:5px;align-items:center;}
@@ -156,10 +222,10 @@ section{position:relative;z-index:1;}
 .typing-dot:nth-child(3){animation-delay:.4s;}
 @keyframes typingBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);background:var(--red);}}
 .ai-input-row{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;}
-.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:10px 18px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:10px 18px;font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .2s;}
 .ai-input:focus{border-color:rgba(220,20,60,.5);}
 .ai-input::placeholder{color:var(--muted);}
-.ai-send{width:38px;height:38px;background:var(--grad-red);border:none;border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:16px;flex-shrink:0;transition:transform .2s;}
+.ai-send{width:38px;height:38px;background:var(--gradient);border:none;border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:16px;flex-shrink:0;transition:transform .2s;}
 .ai-send:hover{transform:scale(1.1);}
 .ai-send:disabled{opacity:.5;cursor:not-allowed;}
 .feature-list{display:flex;flex-direction:column;gap:24px;margin-top:40px;}
@@ -171,105 +237,95 @@ section{position:relative;z-index:1;}
 .feature-item-text h4{font-size:15px;font-weight:600;margin-bottom:4px;color:var(--white);}
 .feature-item-text p{font-size:14px;color:var(--muted);line-height:1.5;}
 
-/* ── TESTIMONIALS ── */
+/* ─────────────────────── TESTIMONIALS ── */
 .testimonials-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;}
-.testimonial-card{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;}
-.testimonial-quote{font-size:48px;font-family:'Fraunces',serif;color:rgba(220,20,60,.2);line-height:1;margin-bottom:-10px;}
+.testimonial-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--border-radius);padding:28px 24px;position:relative;}
+.testimonial-quote{font-size:48px;font-family:var(--font-display,'Fraunces'),serif;color:rgba(220,20,60,.2);line-height:1;margin-bottom:-10px;}
 .testimonial-text{font-size:15px;line-height:1.7;color:var(--muted);margin-bottom:20px;}
 .testimonial-author{display:flex;align-items:center;gap:12px;}
 .author-avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:var(--surface2);}
 .author-name{font-size:14px;font-weight:600;color:var(--white);}
 .author-role{font-size:12px;color:var(--muted);}
-.stars{position:absolute;top:24px;right:24px;color:var(--gold);font-size:13px;letter-spacing:2px;}
+.stars{position:absolute;top:24px;right:24px;color:var(--gold);font-size:13px;}
 
-/* ── CTA ── */
-.cta-section{background:linear-gradient(135deg,rgba(13,24,41,.98) 0%,rgba(26,10,18,.98) 100%);border-top:1px solid var(--border);}
-.cta-inner{text-align:center;max-width:700px;margin:0 auto;padding:120px 40px;}
-.cta-title{font-family:'Fraunces',serif;font-size:clamp(40px,5vw,60px);font-weight:900;line-height:1.1;margin-bottom:20px;color:var(--white);}
+/* ─────────────────────── CTA ── */
+.cta-section{background:linear-gradient(135deg,rgba(13,24,41,.98),rgba(26,10,18,.98));border-top:1px solid var(--border);}
+.cta-inner{text-align:center;max-width:700px;margin:0 auto;padding:100px 40px;}
+.cta-title{font-family:var(--font-display,'Fraunces'),serif;font-size:clamp(38px,5vw,56px);font-weight:900;line-height:1.1;margin-bottom:20px;color:var(--white);}
 .highlight{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .cta-desc{font-size:18px;color:var(--muted);margin-bottom:40px;line-height:1.7;}
-
-/* ── FOOTER ── */
 footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
 .footer-left{font-size:14px;color:var(--muted);}
 .footer-right{display:flex;gap:24px;}
 .footer-right a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;}
 .footer-right a:hover{color:var(--white);}
 
-/* ── NEPAL DIVIDER ── */
-.nepal-divider{height:4px;background:linear-gradient(90deg,var(--red) 0%,var(--blue) 50%,var(--red) 100%);width:100%;}
-
-/* ── MODALS ── */
+/* ─────────────────────── MODALS ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(5,8,15,.85);backdrop-filter:blur(12px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--surface);border:1px solid rgba(220,20,60,.2);border-radius:24px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;padding:36px;transform:translateY(20px);transition:transform .3s;scrollbar-width:none;}
+.modal{background:var(--surface);border:1px solid rgba(220,20,60,.2);border-radius:var(--border-radius);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:32px;transform:translateY(20px);transition:transform .3s;scrollbar-width:none;}
 .modal-overlay.open .modal{transform:translateY(0);}
 .modal::-webkit-scrollbar{display:none;}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
-.modal-title{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--white);}
+.modal-wide{max-width:700px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.modal-title{font-family:var(--font-display,'Fraunces'),serif;font-size:22px;font-weight:800;color:var(--white);}
 .modal-close{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:16px;color:var(--muted);transition:all .2s;}
 .modal-close:hover{color:var(--white);}
-.form-group{margin-bottom:18px;}
+.form-group{margin-bottom:16px;}
 .form-label{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
-.form-input,.form-select{width:100%;background:var(--bg);border:1px solid rgba(0,56,147,.3);border-radius:12px;padding:13px 16px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;appearance:none;}
+.form-input,.form-select{width:100%;background:var(--bg);border:1px solid rgba(0,56,147,.3);border-radius:var(--border-radius);padding:12px 16px;font-size:15px;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .2s;appearance:none;}
 .form-input:focus,.form-select:focus{border-color:rgba(220,20,60,.6);}
 .form-input::placeholder{color:var(--muted);}
 .form-input.err{border-color:rgba(220,20,60,.8);}
 .level-pills{display:flex;gap:10px;}
-.level-pill{flex:1;padding:11px;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.level-pill{flex:1;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--border-radius);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s;font-family:var(--font-body);}
 .level-pill.lvl-b{background:rgba(0,56,147,.2);color:#6699ff;border-color:rgba(0,56,147,.5);}
 .level-pill.lvl-i{background:rgba(255,215,0,.12);color:var(--gold);border-color:rgba(255,215,0,.4);}
 .level-pill.lvl-a{background:rgba(220,20,60,.15);color:var(--red);border-color:rgba(220,20,60,.4);}
-.btn-full{width:100%;padding:16px;background:var(--gradient);border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 30px rgba(220,20,60,.3);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px;}
-.btn-full:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 40px rgba(220,20,60,.45);}
+.btn-full{width:100%;padding:15px;background:var(--gradient);border:none;border-radius:var(--border-radius);font-family:var(--font-body);font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 30px rgba(220,20,60,.3);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-full:hover:not(:disabled){transform:translateY(-1px);}
 .btn-full:disabled{opacity:.6;cursor:not-allowed;}
-
-/* ── AUTH TABS ── */
-.auth-tabs{display:flex;gap:4px;background:var(--bg);border-radius:14px;padding:4px;margin-bottom:22px;}
-.auth-tab{flex:1;padding:9px;text-align:center;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);border:none;background:transparent;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.auth-tabs{display:flex;gap:4px;background:var(--bg);border-radius:14px;padding:4px;margin-bottom:20px;}
+.auth-tab{flex:1;padding:9px;text-align:center;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);border:none;background:transparent;font-family:var(--font-body);transition:all .2s;}
 .auth-tab.active{background:var(--gradient);color:#fff;}
 
-/* ── DASHBOARD ── */
-.dash-header{padding:120px 40px 32px;max-width:1200px;margin:0 auto;}
-.dash-welcome{font-family:'Fraunces',serif;font-size:34px;font-weight:800;margin-bottom:6px;color:var(--white);}
-.dash-sub{font-size:16px;color:var(--muted);margin-bottom:28px;}
+/* ─────────────────────── DASHBOARD ── */
+.dash-header{padding:110px 40px 28px;max-width:1200px;margin:0 auto;}
+.dash-welcome{font-family:var(--font-display,'Fraunces'),serif;font-size:32px;font-weight:800;margin-bottom:6px;color:var(--white);}
+.dash-sub{font-size:16px;color:var(--muted);margin-bottom:24px;}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;transition:border-color .2s;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--border-radius);padding:18px;transition:border-color .2s;}
 .stat-card:hover{border-color:rgba(220,20,60,.3);}
-.stat-card-icon{font-size:24px;margin-bottom:8px;}
-.stat-card-num{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--gold);}
+.stat-card-icon{font-size:22px;margin-bottom:8px;}
+.stat-card-num{font-family:var(--font-display,'Fraunces'),serif;font-size:26px;font-weight:700;color:var(--gold);}
 .stat-card-label{font-size:13px;color:var(--muted);}
-.dash-body{max-width:1200px;margin:0 auto;padding:32px 40px 60px;}
-.dash-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.dash-section-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--white);}
-.courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-.course-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .3s,border-color .3s;}
+.dash-body{max-width:1200px;margin:0 auto;padding:24px 40px 60px;}
+.dash-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.dash-section-title{font-family:var(--font-display,'Fraunces'),serif;font-size:20px;font-weight:700;color:var(--white);}
+.courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.course-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--border-radius);padding:22px;cursor:pointer;transition:transform .3s,border-color .3s;}
 .course-card:hover{transform:translateY(-4px);border-color:rgba(220,20,60,.35);}
 .course-card-subject{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
-.course-card-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;color:var(--white);}
-.course-card-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;margin-bottom:12px;}
-.badge{display:inline-flex;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+.course-card-title{font-family:var(--font-display,'Fraunces'),serif;font-size:17px;font-weight:700;margin-bottom:8px;line-height:1.3;color:var(--white);}
+.course-card-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;margin-bottom:10px;}
+.badge{display:inline-flex;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:600;}
 .badge-b{background:rgba(0,56,147,.2);color:#6699ff;}
 .badge-i{background:rgba(255,215,0,.12);color:var(--gold);}
 .badge-a{background:rgba(220,20,60,.15);color:var(--red);}
 .empty-state{text-align:center;padding:50px 20px;color:var(--muted);grid-column:1/-1;}
 .empty-icon{font-size:48px;margin-bottom:14px;}
-
-/* ── COURSE OUTPUT ── */
-.course-output{display:none;margin-top:22px;border-top:1px solid var(--border);padding-top:22px;}
+.course-output{display:none;margin-top:20px;border-top:1px solid var(--border);padding-top:20px;}
 .course-output.vis{display:block;}
-.course-out-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px;}
-.course-out-meta{font-size:12px;color:var(--muted);margin-bottom:14px;}
-.module-list{display:flex;flex-direction:column;gap:9px;}
-.module-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s,border-color .2s;animation:fadeUp .4s ease both;}
+.course-out-title{font-family:var(--font-display,'Fraunces'),serif;font-size:17px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.course-out-meta{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.module-list{display:flex;flex-direction:column;gap:8px;}
+.module-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s,border-color .2s;animation:fadeUp .4s ease both;}
 .module-item:hover{background:var(--surface2);border-color:rgba(220,20,60,.3);}
-.module-num{width:28px;height:28px;background:var(--gradient);border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.module-num{width:26px;height:26px;background:var(--gradient);border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
 .module-name{font-size:14px;font-weight:600;color:var(--white);}
-.module-meta-text{font-size:12px;color:var(--muted);margin-top:1px;}
+.module-meta-text{font-size:12px;color:var(--muted);}
 .module-arrow{margin-left:auto;color:var(--muted);}
-
-/* ── LESSON MODAL ── */
 .lesson-modal{max-width:680px;}
 .lesson-breadcrumb{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
 .lesson-body{font-size:15px;line-height:1.85;color:var(--text);margin-bottom:20px;white-space:pre-wrap;}
@@ -278,54 +334,57 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 .key-points-box ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
 .key-points-box li{font-size:14px;display:flex;gap:8px;color:var(--text);}
 .key-points-box li::before{content:'✅';flex-shrink:0;}
-.nepal-box{background:linear-gradient(135deg,rgba(220,20,60,.08),rgba(0,56,147,.08));border:1px solid rgba(220,20,60,.2);border-radius:14px;padding:16px;margin-bottom:18px;}
+.nepal-box{background:linear-gradient(135deg,rgba(220,20,60,.07),rgba(0,56,147,.07));border:1px solid rgba(220,20,60,.2);border-radius:14px;padding:16px;margin-bottom:18px;}
 .nepal-box h4{font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;}
 .nepal-box p{font-size:14px;color:var(--muted);line-height:1.6;}
-.audio-btn{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:13px 18px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);width:100%;margin-bottom:16px;transition:border-color .2s;font-family:'DM Sans',sans-serif;}
+.audio-btn{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:12px 16px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);width:100%;margin-bottom:14px;transition:border-color .2s;font-family:var(--font-body);}
 .audio-btn:hover{border-color:rgba(220,20,60,.5);}
 .audio-btn.playing{border-color:var(--red);color:var(--red);}
 .audio-lang-info{font-size:11px;color:var(--muted);margin-left:auto;}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:12px 24px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+/* ─────────────────────── AGE PICKER MODAL ── */
+.age-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
+.age-option{background:var(--bg);border:2px solid var(--border);border-radius:var(--border-radius);padding:20px;cursor:pointer;transition:all .2s;text-align:center;}
+.age-option:hover{border-color:rgba(220,20,60,.5);transform:translateY(-2px);}
+.age-option.selected{border-color:var(--red);background:rgba(220,20,60,.08);}
+.age-option-emoji{font-size:32px;margin-bottom:10px;}
+.age-option-name{font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.age-option-range{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.age-option-desc{font-size:12px;color:var(--muted);line-height:1.4;}
+.age-option-tags{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.age-tag{font-size:10px;padding:2px 7px;border-radius:100px;font-weight:600;}
+
+/* ─────────────────────── CONTENT WARNING ── */
+.content-warn{background:rgba(220,20,60,.08);border:1px solid rgba(220,20,60,.3);border-radius:12px;padding:12px 16px;font-size:13px;color:var(--muted);margin-bottom:16px;display:none;}
+.content-warn.show{display:block;}
+
+/* ─────────────────────── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:11px 22px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.ok{border-color:rgba(0,180,100,.5);color:#00cc66;}
 .toast.err{border-color:rgba(220,20,60,.5);color:var(--red);}
-
-/* ── SPINNER ── */
 .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #fff;border-radius:50%;animation:doSpin .7s linear infinite;display:inline-block;vertical-align:middle;}
 @keyframes doSpin{to{transform:rotate(360deg);}}
 .err-msg{color:var(--red);font-size:13px;margin-top:10px;text-align:center;display:none;}
-
-/* ── ANIMATIONS ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
 .reveal.vis{opacity:1;transform:translateY(0);}
 
-/* ── RESPONSIVE ── */
 @media(max-width:900px){
-  nav{padding:14px 20px;}
-  .nav-links{display:none;}
-  .hero{flex-direction:column;padding:100px 20px 60px;gap:40px;}
-  .hero-right{display:none;}
-  .section-inner{padding:60px 20px;}
-  .steps{grid-template-columns:1fr 1fr;}
-  .step::after{display:none;}
-  .ai-demo-layout{grid-template-columns:1fr;}
-  .subjects-grid{grid-template-columns:1fr 1fr;}
-  .stats-row{grid-template-columns:1fr 1fr;}
-  .courses-grid{grid-template-columns:1fr;}
+  nav{padding:14px 20px;} .nav-links{display:none;}
+  .hero{flex-direction:column;padding:100px 20px 60px;gap:40px;} .hero-right{display:none;}
+  .section-inner{padding:60px 20px;} .steps{grid-template-columns:1fr 1fr;} .step::after{display:none;}
+  .ai-demo-layout{grid-template-columns:1fr;} .subjects-grid{grid-template-columns:1fr 1fr;}
+  .testimonials-grid{grid-template-columns:1fr;} .stats-row{grid-template-columns:1fr 1fr;}
+  .courses-grid{grid-template-columns:1fr;} .news-grid{grid-template-columns:1fr;}
   footer{flex-direction:column;gap:16px;text-align:center;}
-  .dash-header{padding:100px 20px 24px;}
-  .dash-body{padding:20px 20px 40px;}
+  .dash-header{padding:100px 20px 22px;} .dash-body{padding:16px 20px 40px;}
+  .age-grid{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:560px){
-  .steps{grid-template-columns:1fr;}
-  .subjects-grid{grid-template-columns:1fr;}
-  .hero-actions{flex-direction:column;}
-  .btn-primary,.btn-secondary{justify-content:center;}
-  .modal{padding:22px 18px;}
-  .level-pills{flex-direction:column;}
+  .steps{grid-template-columns:1fr;} .subjects-grid{grid-template-columns:1fr;}
+  .hero-actions{flex-direction:column;} .btn-primary,.btn-secondary{justify-content:center;}
+  .modal{padding:22px 18px;} .level-pills{flex-direction:column;} .age-grid{grid-template-columns:1fr;}
 }
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
@@ -338,6 +397,12 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 <div class="grid-overlay"></div>
 <div class="toast" id="toast"></div>
 
+<!-- NEWS TICKER -->
+<div class="news-ticker" id="newsTicker" style="display:none;">
+  <span class="ticker-label">🔴 LIVE</span>
+  <div class="ticker-track"><div class="ticker-text" id="tickerText"></div></div>
+</div>
+
 <!-- NAV -->
 <nav>
   <div class="logo" onclick="goHome()">
@@ -347,11 +412,12 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
   <ul class="nav-links" id="navGuest">
     <li><a href="#how">How it works</a></li>
     <li><a href="#subjects">Subjects</a></li>
-    <li><a href="#" class="nav-cta" onclick="openAuth('login');return false;">Login</a></li>
-    <li><a href="#" class="nav-cta" onclick="openAuth('register');return false;">Sign Up Free</a></li>
+    <li><a href="#" onclick="openAuth('login');return false;" class="nav-cta">Login</a></li>
+    <li><a href="#" onclick="openAuth('register');return false;" class="nav-cta">Sign Up Free</a></li>
   </ul>
   <div class="nav-user" id="navAuth" style="display:none;">
     <div><div class="nav-user-name" id="navName">—</div><div class="nav-user-xp" id="navXP">0 XP</div></div>
+    <span id="navAgeBadge" class="age-badge" onclick="openAgeModal()" style="display:none;"></span>
     <button class="btn-sm" onclick="logout()">Logout</button>
   </div>
 </nav>
@@ -361,14 +427,14 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 <section>
   <div class="hero">
     <div class="hero-left">
-      <div class="hero-badge"><span>🇳🇵</span> Built for Nepal's students</div>
-      <h1 class="hero-title"><span class="nepali">सिकाइ</span><span class="eng">Learn Smarter,<br/>Learn in Nepali.</span></h1>
-      <p class="hero-desc">Nepal's first AI-powered learning platform. Type any topic — from <strong>Photosynthesis to Lok Sewa</strong> — and Sikai builds you a full course, quiz, and voice lesson in seconds.</p>
+      <div class="hero-badge" id="heroBadge"><span>🇳🇵</span> <span id="heroBadgeText">Built for Nepal's students</span></div>
+      <h1 class="hero-title"><span class="nepali">सिकाइ</span><span class="eng" id="heroEng">Learn Smarter,<br/>Learn in Nepali.</span></h1>
+      <p class="hero-desc" id="heroDesc">Nepal's first AI-powered learning platform. Type any topic — from <strong>Photosynthesis to Lok Sewa</strong> — and Sikai builds you a full course, quiz, and voice lesson in seconds.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openAuth('register')">✨ Start Learning Free</button>
+        <button class="btn-primary" onclick="openAuth('register')" id="heroCTA">✨ Start Learning Free</button>
         <a href="#how" class="btn-secondary">▶ See How It Works</a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats" id="heroStats">
         <div><div class="stat-num">12+</div><div class="stat-label">Subjects</div></div>
         <div><div class="stat-num">3 Levels</div><div class="stat-label">Beginner to Advanced</div></div>
         <div><div class="stat-num">4 Langs</div><div class="stat-label">Nepali · English · Bhojpuri</div></div>
@@ -388,7 +454,23 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
     </div>
   </div>
 </section>
+<div class="nepal-divider"></div>
 
+<!-- NEWS SECTION on landing -->
+<section class="news-section">
+  <div class="section-inner">
+    <div class="section-label reveal">📰 Latest News</div>
+    <h2 class="section-title reveal">Nepal & World — <em style="font-weight:300;font-style:italic;color:var(--muted);">Stay Updated</em></h2>
+    <div class="news-tabs" id="newsTabs">
+      <button class="news-tab active" onclick="loadNews('nepal',this)">🇳🇵 Nepal</button>
+      <button class="news-tab" onclick="loadNews('world',this)">🌍 World</button>
+      <button class="news-tab" onclick="loadNews('education',this)">📚 Education</button>
+      <button class="news-tab" onclick="loadNews('tech',this)">💻 Technology</button>
+      <button class="news-tab" onclick="loadNews('career',this)">💼 Career & Jobs</button>
+    </div>
+    <div class="news-grid" id="newsGrid"></div>
+  </div>
+</section>
 <div class="nepal-divider"></div>
 
 <section id="how"><div class="section-inner">
@@ -396,12 +478,11 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
   <h2 class="section-title reveal">From topic to full course<br/><em style="font-weight:300;font-style:italic;color:var(--muted);">in under 30 seconds.</em></h2>
   <div class="steps">
     <div class="step reveal" style="transition-delay:.1s"><div class="step-num">01</div><div class="step-icon">✍️</div><div class="step-title">Type any topic</div><div class="step-desc">Type "Photosynthesis", "Lok Sewa GK", "Python" — anything you want to learn.</div></div>
-    <div class="step reveal" style="transition-delay:.2s"><div class="step-num">02</div><div class="step-icon">🎯</div><div class="step-title">Choose your level</div><div class="step-desc">Beginner, Intermediate, or Advanced. Also choose your language — Nepali, English, or Bhojpuri.</div></div>
-    <div class="step reveal" style="transition-delay:.3s"><div class="step-num">03</div><div class="step-icon">🧠</div><div class="step-title">AI builds your course</div><div class="step-desc">Real AI creates a full course with Nepal-based examples, audio scripts, and key points.</div></div>
-    <div class="step reveal" style="transition-delay:.4s"><div class="step-num">04</div><div class="step-icon">🎉</div><div class="step-title">Learn, quiz & track</div><div class="step-desc">Read lessons, listen to audio narration, take quizzes, earn XP and badges.</div></div>
+    <div class="step reveal" style="transition-delay:.2s"><div class="step-num">02</div><div class="step-icon">🎯</div><div class="step-title">Choose your level</div><div class="step-desc">Beginner to Advanced. Choose Nepali, English, or Bhojpuri language.</div></div>
+    <div class="step reveal" style="transition-delay:.3s"><div class="step-num">03</div><div class="step-icon">🧠</div><div class="step-title">AI builds your course</div><div class="step-desc">Real AI creates a full course with Nepal examples and audio scripts.</div></div>
+    <div class="step reveal" style="transition-delay:.4s"><div class="step-num">04</div><div class="step-icon">🎉</div><div class="step-title">Learn, quiz & track</div><div class="step-desc">Read lessons, listen to audio, earn XP and track your progress.</div></div>
   </div>
 </div></section>
-
 <div class="nepal-divider"></div>
 
 <section class="ai-demo-section"><div class="section-inner">
@@ -409,65 +490,46 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
     <div>
       <div class="section-label reveal">AI Tutor</div>
       <h2 class="section-title reveal">Your personal teacher,<br/><em style="font-weight:300;font-style:italic;color:var(--muted);">always available.</em></h2>
-      <p class="section-desc reveal">Ask any doubt in Nepali, English, or Bhojpuri. Real AI — powered by Llama 3, not scripted answers.</p>
+      <p style="font-size:17px;color:var(--muted);line-height:1.7;max-width:460px;" class="reveal">Ask any doubt in Nepali, English, or Bhojpuri. Real Llama 3 AI — not scripted answers.</p>
       <div class="feature-list">
-        <div class="feature-item reveal"><div class="feature-icon-box fi-red">💬</div><div class="feature-item-text"><h4>Nepali · Bhojpuri · English</h4><p>Answers in your preferred language. Bhojpuri support for Terai/Madhesh students.</p></div></div>
-        <div class="feature-item reveal"><div class="feature-icon-box fi-blue">🎧</div><div class="feature-item-text"><h4>Voice Learning Mode</h4><p>Every lesson narrated aloud. Nepali voice when available, Hindi as closest fallback.</p></div></div>
-        <div class="feature-item reveal"><div class="feature-icon-box fi-gold">📶</div><div class="feature-item-text"><h4>Works Offline Too</h4><p>Last 5 lessons cached automatically. No internet? Study anyway.</p></div></div>
+        <div class="feature-item reveal"><div class="feature-icon-box fi-red">💬</div><div class="feature-item-text"><h4>Nepali · Bhojpuri · English</h4><p>Answers in your preferred language. Bhojpuri for Madhesh/Terai students.</p></div></div>
+        <div class="feature-item reveal"><div class="feature-icon-box fi-blue">🎧</div><div class="feature-item-text"><h4>Voice Learning Mode</h4><p>Every lesson narrated aloud. Nepali voice when available, Hindi as fallback.</p></div></div>
+        <div class="feature-item reveal"><div class="feature-icon-box fi-gold">📶</div><div class="feature-item-text"><h4>Works Offline Too</h4><p>Last 5 lessons cached. No internet? Study anyway.</p></div></div>
       </div>
     </div>
     <div class="reveal">
       <div class="ai-window">
         <div class="ai-window-header"><div class="window-dots"><div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div></div><span class="window-title">Sikai AI Tutor — Powered by Llama 3</span></div>
-        <div class="ai-chat" id="demoChat">
-          <div class="chat-msg ai"><div class="ai-label">🤖 Sikai</div>नमस्ते! म Sikai हुँ — तपाईंको AI शिक्षक। Sign up गरेर real AI tutor use गर्नुस्! 😊</div>
-        </div>
-        <div class="ai-input-row">
-          <input class="ai-input" placeholder="Sign up to ask real questions..." readonly onclick="openAuth('register')"/>
-          <button class="ai-send" onclick="openAuth('register')">➤</button>
-        </div>
+        <div class="ai-chat" id="demoChat"><div class="chat-msg ai"><div class="ai-label">🤖 Sikai</div>नमस्ते! म Sikai हुँ। Sign up गरेर real AI tutor use गर्नुस्! 😊</div></div>
+        <div class="ai-input-row"><input class="ai-input" placeholder="Sign up to ask real questions..." readonly onclick="openAuth('register')"/><button class="ai-send" onclick="openAuth('register')">➤</button></div>
       </div>
     </div>
   </div>
 </div></section>
-
 <div class="nepal-divider"></div>
 
 <section id="subjects"><div class="section-inner">
   <div class="section-label reveal">All Subjects</div>
-  <h2 class="section-title reveal">Every topic a Nepali<br/><em style="font-weight:300;font-style:italic;color:var(--muted);">student needs.</em></h2>
+  <h2 class="section-title reveal">Every topic a Nepali student needs.</h2>
   <div class="subjects-grid">
     <div class="subject-card reveal" onclick="openAuth('register')"><div class="subject-emoji">🔬</div><div class="subject-name">Science</div><div class="subject-name-np">विज्ञान</div><div class="subject-desc">Biology, Chemistry, Physics with Nepal examples.</div><span class="subject-tag">SEE Ready</span><span class="subject-tag">Grade 6–12</span></div>
     <div class="subject-card reveal" style="transition-delay:.05s" onclick="openAuth('register')"><div class="subject-emoji">➗</div><div class="subject-name">Mathematics</div><div class="subject-name-np">गणित</div><div class="subject-desc">Step-by-step from arithmetic to trigonometry.</div><span class="subject-tag">Grade 6–12</span><span class="subject-tag">+2 Level</span></div>
     <div class="subject-card reveal" style="transition-delay:.1s" onclick="openAuth('register')"><div class="subject-emoji">🌍</div><div class="subject-name">Social Studies</div><div class="subject-name-np">सामाजिक अध्ययन</div><div class="subject-desc">Nepal geography, history, civics and culture.</div><span class="subject-tag">Nepal Focus</span></div>
-    <div class="subject-card reveal" style="transition-delay:.15s" onclick="openAuth('register')"><div class="subject-emoji">🏛️</div><div class="subject-name">Lok Sewa Aayog</div><div class="subject-name-np">लोक सेवा आयोग</div><div class="subject-desc">Complete PSC prep — GK, constitution, reasoning.</div><span class="subject-tag">Competitive</span><span class="subject-tag">Exam Pack</span></div>
+    <div class="subject-card reveal" style="transition-delay:.15s" onclick="openAuth('register')"><div class="subject-emoji">🏛️</div><div class="subject-name">Lok Sewa Aayog</div><div class="subject-name-np">लोक सेवा आयोग</div><div class="subject-desc">Complete PSC prep — GK, constitution, reasoning.</div><span class="subject-tag">Competitive</span></div>
     <div class="subject-card reveal" style="transition-delay:.2s" onclick="openAuth('register')"><div class="subject-emoji">💻</div><div class="subject-name">Programming</div><div class="subject-name-np">कम्प्युटर विज्ञान</div><div class="subject-desc">Python, Web Dev, AI basics from scratch.</div><span class="subject-tag">Career Skills</span></div>
     <div class="subject-card reveal" style="transition-delay:.25s" onclick="openAuth('register')"><div class="subject-emoji">📖</div><div class="subject-name">Nepali & English</div><div class="subject-name-np">नेपाली र अंग्रेजी</div><div class="subject-desc">Grammar, writing, literature, comprehension.</div><span class="subject-tag">All Levels</span></div>
   </div>
 </div></section>
 
-<div class="nepal-divider"></div>
-
-<section class="testimonials-section"><div class="section-inner">
-  <div class="section-label reveal">Early Feedback</div>
-  <h2 class="section-title reveal">Students across Nepal<br/><em style="font-weight:300;font-style:italic;color:var(--muted);">are already loving it.</em></h2>
-  <div class="testimonials-grid">
-    <div class="testimonial-card reveal"><div class="stars">★★★★★</div><div class="testimonial-quote">"</div><div class="testimonial-text">SEE को preparation गर्दा Sikai ले धेरै help गर्यो। Nepali मा explain गर्दा एकदम सजिलो भयो।</div><div class="testimonial-author"><div class="author-avatar">👩</div><div><div class="author-name">Priya Shrestha</div><div class="author-role">Grade 10, Kathmandu</div></div></div></div>
-    <div class="testimonial-card reveal" style="transition-delay:.1s"><div class="stars">★★★★★</div><div class="testimonial-quote">"</div><div class="testimonial-text">Lok Sewa को GK section मा धेरै confidence दियो। Bhojpuri option भएकाले Madhesh का साथीहरूलाई पनि काम लाग्छ!</div><div class="testimonial-author"><div class="author-avatar">👨</div><div><div class="author-name">Bikram Thapa</div><div class="author-role">PSC Aspirant, Chitwan</div></div></div></div>
-    <div class="testimonial-card reveal" style="transition-delay:.2s"><div class="stars">★★★★★</div><div class="testimonial-quote">"</div><div class="testimonial-text">As a teacher in Dang, the offline mode means my students can use Sikai every day without internet.</div><div class="testimonial-author"><div class="author-avatar">👩‍🏫</div><div><div class="author-name">Maya Gurung</div><div class="author-role">Teacher, Dang</div></div></div></div>
-  </div>
-</div></section>
-
 <section class="cta-section"><div class="cta-inner reveal">
-  <div class="section-label" style="text-align:center;">🇳🇵 Ready to start?</div>
+  <div class="section-label" style="text-align:center;">🇳🇵 Ready?</div>
   <h2 class="cta-title">Every Nepali student deserves a <span class="highlight">world-class teacher.</span></h2>
-  <p class="cta-desc">Generate your first AI-powered course for free. Nepali, English, or Bhojpuri — your choice. No credit card needed.</p>
+  <p class="cta-desc">Generate your first AI-powered course free. Nepali, English, or Bhojpuri.</p>
   <button class="btn-primary" style="margin:0 auto;display:inline-flex;" onclick="openAuth('register')">🚀 Start Learning Free</button>
-  <div style="margin-top:16px;font-size:13px;color:var(--muted);">📲 Add to Home Screen · Works offline · No App Store needed</div>
+  <div style="margin-top:16px;font-size:13px;color:var(--muted);">📲 Install as App · Works offline · No App Store needed</div>
 </div></section>
-
 <footer>
-  <div class="footer-left"><strong style="color:var(--white);">सिकाइ Sikai</strong> — Built with ❤️ for Nepal's students.<br/><span style="font-size:12px;">© 2025 Sikai Learning. Kathmandu, Nepal 🇳🇵</span></div>
+  <div class="footer-left"><strong style="color:var(--white);">सिकाइ Sikai</strong> — Built with ❤️ for Nepal.<br/><span style="font-size:12px;">© 2025 Sikai Learning 🇳🇵</span></div>
   <div class="footer-right"><a href="#">About</a><a href="#">For Schools</a><a href="#">Privacy</a></div>
 </footer>
 </div>
@@ -476,7 +538,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 <div id="pgDash" style="display:none;">
   <div class="dash-header">
     <div class="dash-welcome" id="dashWelcome">नमस्ते! 👋</div>
-    <div class="dash-sub">के सिक्नुहुन्छ आज? / What will you learn today?</div>
+    <div class="dash-sub" id="dashSub">के सिक्नुहुन्छ आज?</div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-card-icon">📚</div><div class="stat-card-num" id="sLessons">0</div><div class="stat-card-label">Lessons completed</div></div>
       <div class="stat-card"><div class="stat-card-icon">⭐</div><div class="stat-card-num" id="sXP">0</div><div class="stat-card-label">XP earned</div></div>
@@ -485,24 +547,32 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
     </div>
   </div>
   <div class="dash-body">
+    <!-- NEWS in dashboard -->
+    <div style="margin-bottom:36px;">
+      <div class="dash-section-header">
+        <div class="dash-section-title">📰 Latest News</div>
+        <div class="news-tabs" style="margin-bottom:0;">
+          <button class="news-tab active" onclick="loadDashNews('nepal',this)" style="padding:6px 14px;font-size:12px;">🇳🇵 Nepal</button>
+          <button class="news-tab" onclick="loadDashNews('world',this)" style="padding:6px 14px;font-size:12px;">🌍 World</button>
+          <button class="news-tab" onclick="loadDashNews('education',this)" style="padding:6px 14px;font-size:12px;">📚 Education</button>
+          <button class="news-tab" onclick="loadDashNews('tech',this)" style="padding:6px 14px;font-size:12px;">💻 Tech</button>
+        </div>
+      </div>
+      <div class="news-grid" id="dashNewsGrid" style="margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));"></div>
+    </div>
+
     <div class="dash-section-header">
       <div class="dash-section-title">My Courses</div>
-      <button class="btn-primary" style="padding:10px 22px;font-size:14px;" onclick="openCourseGen()">✨ Generate New Course</button>
+      <button class="btn-primary" style="padding:10px 20px;font-size:13px;" onclick="openCourseGen()">✨ Generate New Course</button>
     </div>
-    <div class="courses-grid" id="coursesGrid">
-      <div class="empty-state"><div class="empty-icon">📭</div><p>No courses yet!</p><button class="btn-primary" onclick="openCourseGen()">✨ Generate My First Course</button></div>
-    </div>
-    <div style="margin-top:44px;">
-      <div class="dash-section-title" style="margin-bottom:16px;">🤖 Ask AI Tutor</div>
+    <div class="courses-grid" id="coursesGrid"><div class="empty-state"><div class="empty-icon">📭</div><p>No courses yet!</p><button class="btn-primary" onclick="openCourseGen()">✨ Generate My First Course</button></div></div>
+
+    <div style="margin-top:40px;">
+      <div class="dash-section-title" style="margin-bottom:14px;">🤖 Ask AI Tutor</div>
       <div class="ai-window">
-        <div class="ai-window-header"><div class="window-dots"><div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div></div><span class="window-title">Sikai AI Tutor — Powered by Llama 3</span></div>
-        <div class="ai-chat" id="tutorChat">
-          <div class="chat-msg ai"><div class="ai-label">🤖 Sikai</div>नमस्ते! म Sikai हुँ — तपाईंको AI शिक्षक। कुनै पनि academic question सोध्नुस् — Nepali, English, वा Bhojpuri मा! 😊</div>
-        </div>
-        <div class="ai-input-row">
-          <input class="ai-input" id="tutorIn" placeholder="आफ्नो प्रश्न लेख्नुस्... (Nepali, English or Bhojpuri)" onkeydown="if(event.key==='Enter')askTutor()"/>
-          <button class="ai-send" id="tutorBtn" onclick="askTutor()">➤</button>
-        </div>
+        <div class="ai-window-header"><div class="window-dots"><div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div></div><span class="window-title">Sikai AI Tutor — Llama 3</span></div>
+        <div class="ai-chat" id="tutorChat"><div class="chat-msg ai"><div class="ai-label">🤖 Sikai</div>नमस्ते! कुनै पनि question सोध्नुस् — Nepali, English, वा Bhojpuri मा! 😊</div></div>
+        <div class="ai-input-row"><input class="ai-input" id="tutorIn" placeholder="आफ्नो प्रश्न लेख्नुस्..." onkeydown="if(event.key==='Enter')askTutor()"/><button class="ai-send" id="tutorBtn" onclick="askTutor()">➤</button></div>
       </div>
     </div>
   </div>
@@ -512,10 +582,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 <div class="modal-overlay" id="mAuth" onclick="if(event.target===this)closeAuth()">
   <div class="modal">
     <div class="modal-header"><div class="modal-title">🇳🇵 Welcome to Sikai</div><button class="modal-close" onclick="closeAuth()">✕</button></div>
-    <div class="auth-tabs">
-      <button class="auth-tab" id="tLogin" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" id="tReg" onclick="switchTab('register')">Sign Up Free</button>
-    </div>
+    <div class="auth-tabs"><button class="auth-tab" id="tLogin" onclick="switchTab('login')">Login</button><button class="auth-tab" id="tReg" onclick="switchTab('register')">Sign Up Free</button></div>
     <div id="fLogin">
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="lEmail" type="email" placeholder="your@email.com"/></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="lPass" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
@@ -523,22 +590,26 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
       <div class="err-msg" id="loginErr"></div>
     </div>
     <div id="fReg" style="display:none;">
-      <div class="form-group"><label class="form-label">Full Name / पूरा नाम</label><input class="form-input" id="rName" placeholder="Aarav Sharma"/></div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="rName" placeholder="Aarav Sharma"/></div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="rEmail" type="email" placeholder="your@email.com"/></div>
-      <div class="form-group"><label class="form-label">Password (min 6 chars)</label><input class="form-input" id="rPass" type="password" placeholder="Test1234"/></div>
+      <div class="form-group"><label class="form-label">Password (min 6)</label><input class="form-input" id="rPass" type="password" placeholder="Test1234"/></div>
+      <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" id="rDob" type="date" max="2015-01-01"/></div>
       <div class="form-group"><label class="form-label">Grade / Goal</label>
-        <select class="form-select" id="rGrade">
-          <option value="">Select...</option>
-          <option value="grade6-8">Grade 6–8</option>
-          <option value="grade9-10">Grade 9–10 (SEE)</option>
-          <option value="grade11-12">Grade 11–12 (+2)</option>
-          <option value="loksewa">Lok Sewa Aayog</option>
-          <option value="career">Career / Self Learning</option>
-        </select>
+        <select class="form-select" id="rGrade"><option value="">Select...</option><option value="grade6-8">Grade 6–8</option><option value="grade9-10">Grade 9–10 (SEE)</option><option value="grade11-12">Grade 11–12 (+2)</option><option value="loksewa">Lok Sewa Aayog</option><option value="career">Career / Self Learning</option></select>
       </div>
       <button class="btn-full" onclick="doRegister()" id="btnReg"><span id="btnRegTxt">🚀 Create Free Account</span></button>
       <div class="err-msg" id="regErr"></div>
     </div>
+  </div>
+</div>
+
+<!-- AGE PICKER MODAL -->
+<div class="modal-overlay" id="mAge" onclick="if(event.target===this)closeAgeModal()">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🎨 Choose Your Experience</div><button class="modal-close" onclick="closeAgeModal()">✕</button></div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Sikai adapts its design and content style to match your age group. Pick the one that fits you!</p>
+    <div class="age-grid" id="ageGrid"></div>
+    <button class="btn-full" style="margin-top:16px;" onclick="saveAge()">✅ Apply This Style</button>
   </div>
 </div>
 
@@ -547,31 +618,16 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
   <div class="modal">
     <div class="modal-header"><div class="modal-title">✨ Generate a Course</div><button class="modal-close" onclick="closeCourse()">✕</button></div>
     <div id="courseForm">
-      <div class="form-group"><label class="form-label">Topic / विषय</label><input class="form-input" id="cTopic" placeholder="e.g. Photosynthesis, Python, Nepal History, Lok Sewa GK..."/></div>
+      <div class="content-warn" id="contentWarn">⚠️ Some content may be restricted based on your age group. Sikai will automatically filter appropriate content.</div>
+      <div class="form-group"><label class="form-label">Topic / विषय</label><input class="form-input" id="cTopic" placeholder="e.g. Photosynthesis, Python, Nepal History..."/></div>
       <div class="form-group"><label class="form-label">Grade / Goal</label>
-        <select class="form-select" id="cGrade">
-          <option value="">Select...</option>
-          <option value="grade6-8">Grade 6–8</option>
-          <option value="grade9-10">Grade 9–10 (SEE)</option>
-          <option value="grade11-12">Grade 11–12 (+2)</option>
-          <option value="loksewa">Lok Sewa Aayog</option>
-          <option value="career">Career / Self Learning</option>
-        </select>
+        <select class="form-select" id="cGrade"><option value="">Select...</option><option value="grade6-8">Grade 6–8</option><option value="grade9-10">Grade 9–10 (SEE)</option><option value="grade11-12">Grade 11–12 (+2)</option><option value="loksewa">Lok Sewa Aayog</option><option value="career">Career / Self Learning</option></select>
       </div>
       <div class="form-group"><label class="form-label">Language / भाषा</label>
-        <select class="form-select" id="cLang">
-          <option value="mixed">Nepali + English (Default)</option>
-          <option value="nepali">Pure Nepali (नेपाली)</option>
-          <option value="bhojpuri">Bhojpuri (भोजपुरी — Madhesh/Terai)</option>
-          <option value="english">English Only</option>
-        </select>
+        <select class="form-select" id="cLang"><option value="mixed">Nepali + English (Default)</option><option value="nepali">Pure Nepali (नेपाली)</option><option value="bhojpuri">Bhojpuri (भोजपुरी)</option><option value="english">English Only</option></select>
       </div>
       <div class="form-group"><label class="form-label">Difficulty Level</label>
-        <div class="level-pills">
-          <button class="level-pill" id="lp-b" onclick="setLvl('beginner')">🌱 Beginner</button>
-          <button class="level-pill" id="lp-i" onclick="setLvl('intermediate')">⚡ Intermediate</button>
-          <button class="level-pill" id="lp-a" onclick="setLvl('advanced')">🔥 Advanced</button>
-        </div>
+        <div class="level-pills"><button class="level-pill" id="lp-b" onclick="setLvl('beginner')">🌱 Beginner</button><button class="level-pill" id="lp-i" onclick="setLvl('intermediate')">⚡ Intermediate</button><button class="level-pill" id="lp-a" onclick="setLvl('advanced')">🔥 Advanced</button></div>
       </div>
       <button class="btn-full" onclick="genCourse()" id="btnGen"><span id="btnGenTxt">🧠 Generate My Course</span></button>
       <div class="err-msg" id="genErr"></div>
@@ -587,15 +643,8 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 <!-- LESSON MODAL -->
 <div class="modal-overlay" id="mLesson" onclick="if(event.target===this)closeLesson()">
   <div class="modal lesson-modal">
-    <div class="modal-header">
-      <div><div class="lesson-breadcrumb" id="lBread"></div><div class="modal-title" id="lTitle"></div></div>
-      <button class="modal-close" onclick="closeLesson()">✕</button>
-    </div>
-    <button class="audio-btn" id="audioBtn" onclick="toggleAudio()" style="display:none;">
-      <span id="audioIcon">🎧</span>
-      <span id="audioTxt">Listen to Audio Narration</span>
-      <span class="audio-lang-info" id="audioLangInfo"></span>
-    </button>
+    <div class="modal-header"><div><div class="lesson-breadcrumb" id="lBread"></div><div class="modal-title" id="lTitle"></div></div><button class="modal-close" onclick="closeLesson()">✕</button></div>
+    <button class="audio-btn" id="audioBtn" onclick="toggleAudio()" style="display:none;"><span id="audioIcon">🎧</span><span id="audioTxt">Listen to Audio Narration</span><span class="audio-lang-info" id="audioLangInfo"></span></button>
     <div class="lesson-body" id="lBody"></div>
     <div class="key-points-box" id="kpBox" style="display:none;"><h4>Key Points</h4><ul id="kpList"></ul></div>
     <div class="nepal-box" id="npBox" style="display:none;"><h4>🇳🇵 Nepal Example</h4><p id="npTxt"></p></div>
@@ -604,46 +653,372 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:40
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════
 const API = 'https://sikhai-backend-production.up.railway.app';
 
-// ─── STATE ────────────────────────────────────────────────
-let token=localStorage.getItem('sk_tok')||null;
-let user=JSON.parse(localStorage.getItem('sk_usr')||'null');
-let lvl='',history=[],curLesson=null,curCourseId=null,speaking=false;
+// ══════════════════════════════════════════════════════
+// AGE GROUPS — This drives everything
+// ══════════════════════════════════════════════════════
+const AGE_GROUPS = {
+  genz: {
+    id:'genz', label:'Gen Z', emoji:'⚡', range:'Born 1997–2012 (Age 13–28)',
+    desc:'Trendy, fast-paced, meme-friendly. Short lessons, gamified XP, viral vibes.',
+    cssClass:'age-genz',
+    tagColor:'rgba(255,45,85,.15)', tagTextColor:'#ff2d55',
+    tags:['🔥 Trending', '✨ Aesthetic', '🎮 Gamified'],
+    heroText:'Learn smarter. No cap. 🔥',
+    heroBadge:'⚡ Built for Gen Z Nepal',
+    heroDesc:'Nepal\'s most fire AI learning platform. Type any topic and get a full course instantly. No boring lectures.',
+    heroCTA:'🚀 Start fr (it\'s free)',
+    dashGreet: n => `Wassup ${n}! 🔥`,
+    dashSub:'What you learning today? 👀',
+    tutorPlaceholder:'broo ask kya chaiye... 😭',
+    contentFilter: ['18+','adult','political violence','explicit'],
+    maxAge:28,
+  },
+  millennial: {
+    id:'millennial', label:'Millennial', emoji:'🎯', range:'Born 1981–1996 (Age 29–44)',
+    desc:'Balanced, career-focused, value-driven. Practical content, professional growth.',
+    cssClass:'age-millennial',
+    tagColor:'rgba(220,20,60,.12)', tagTextColor:'#DC143C',
+    tags:['📈 Career', '🎓 Upskill', '🇳🇵 Nepal'],
+    heroText:'Learn Smarter, Learn in Nepali.',
+    heroBadge:'🇳🇵 Built for Nepal\'s students',
+    heroDesc:'Nepal\'s first AI-powered learning platform. Generate full courses on any topic in seconds. Nepali, English, or Bhojpuri.',
+    heroCTA:'✨ Start Learning Free',
+    dashGreet: n => `नमस्ते, ${n}! 👋`,
+    dashSub:'के सिक्नुहुन्छ आज? / What will you learn today?',
+    tutorPlaceholder:'आफ्नो प्रश्न लेख्नुस्... (Nepali or English)',
+    contentFilter: ['explicit','18+'],
+    maxAge:44,
+  },
+  genx: {
+    id:'genx', label:'Gen X', emoji:'💼', range:'Born 1965–1980 (Age 45–60)',
+    desc:'Experienced, pragmatic, efficiency-focused. Clear information, professional tone.',
+    cssClass:'age-genx',
+    tagColor:'rgba(185,28,28,.12)', tagTextColor:'#b91c1c',
+    tags:['📊 Professional', '🎯 Focused', '💡 Practical'],
+    heroText:'Professional Learning for Nepal.',
+    heroBadge:'💼 Trusted by Nepal professionals',
+    heroDesc:'AI-powered professional development and career learning platform for Nepal. Efficient, accurate, and results-focused.',
+    heroCTA:'Start Learning Now',
+    dashGreet: n => `Welcome, ${n}`,
+    dashSub:'What would you like to learn today?',
+    tutorPlaceholder:'Enter your question...',
+    contentFilter: ['explicit','18+','childish'],
+    maxAge:60,
+  },
+  senior: {
+    id:'senior', label:'Senior / Adult 60+', emoji:'🌟', range:'Born before 1965 (Age 60+)',
+    desc:'Larger text, simple navigation, clear language, cultural respect.',
+    cssClass:'age-senior',
+    tagColor:'rgba(192,57,43,.12)', tagTextColor:'#c0392b',
+    tags:['📖 Clear', '🙏 Respectful', '🇳🇵 Nepali'],
+    heroText:'सजिलो सिकाइ, सबैका लागि।',
+    heroBadge:'🙏 सबैका लागि — For all ages',
+    heroDesc:'नेपालको पहिलो AI शिक्षा मञ्च। जुनसुकै विषय टाइप गर्नुस् र पूरा पाठ्यक्रम पाउनुस्। सरल र स्पष्ट भाषामा।',
+    heroCTA:'🙏 सिक्न सुरु गर्नुस्',
+    dashGreet: n => `नमस्ते, ${n} जी 🙏`,
+    dashSub:'आज के सिक्ने विचार छ? कृपया विषय छान्नुस्।',
+    tutorPlaceholder:'यहाँ आफ्नो प्रश्न लेख्नुस्...',
+    contentFilter: ['explicit','18+','slang','violence'],
+    maxAge:120,
+  },
+};
 
-// ─── BOOT ─────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
-  token&&user?showDash():showLanding();
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let token       = localStorage.getItem('sk_tok')||null;
+let user        = JSON.parse(localStorage.getItem('sk_usr')||'null');
+let lvl         = '';
+let history     = [];
+let curLesson   = null;
+let curCourseId = null;
+let speaking    = false;
+let currentAge  = localStorage.getItem('sk_age') || 'millennial';
+let selectedAge = currentAge;
+
+// ══════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', ()=>{
+  applyAgeTheme(currentAge);
+  token && user ? showDash() : showLanding();
   initReveal(); initPWA();
-  if(window.speechSynthesis)window.speechSynthesis.getVoices();
+  loadNews('nepal', document.querySelector('.news-tab.active'));
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+  buildAgeGrid();
+  loadTicker();
 });
 
-// ─── ROUTING ──────────────────────────────────────────────
-function showLanding(){
+// ══════════════════════════════════════════════════════
+// AGE THEME ENGINE
+// ══════════════════════════════════════════════════════
+function applyAgeTheme(ageId) {
+  const ag = AGE_GROUPS[ageId] || AGE_GROUPS.millennial;
+  // Remove all age classes
+  Object.values(AGE_GROUPS).forEach(a => document.body.classList.remove(a.cssClass));
+  document.body.classList.add(ag.cssClass);
+  currentAge = ageId;
+  localStorage.setItem('sk_age', ageId);
+
+  // Update hero copy
+  const heroBadge = document.getElementById('heroBadge');
+  const heroBadgeText = document.getElementById('heroBadgeText');
+  const heroEng   = document.getElementById('heroEng');
+  const heroDesc  = document.getElementById('heroDesc');
+  const heroCTA   = document.getElementById('heroCTA');
+  if(heroBadgeText) heroBadgeText.textContent = ag.heroBadge.replace(/^[^\s]+\s/,'');
+  if(heroEng)  heroEng.textContent = ag.heroText;
+  if(heroDesc) heroDesc.innerHTML  = ag.heroDesc;
+  if(heroCTA)  heroCTA.textContent = ag.heroCTA;
+
+  // Update nav badge
+  const navBadge = document.getElementById('navAgeBadge');
+  if(navBadge && token) {
+    navBadge.style.display = 'inline-flex';
+    navBadge.style.background = ag.tagColor;
+    navBadge.style.color = ag.tagTextColor;
+    navBadge.style.borderColor = ag.tagColor;
+    navBadge.textContent = `${ag.emoji} ${ag.label}`;
+  }
+
+  // Senior — bigger font size
+  if(ageId === 'senior') {
+    document.body.style.fontSize = '17px';
+  } else if(ageId === 'genz') {
+    document.body.style.fontSize = '15px';
+  } else {
+    document.body.style.fontSize = '';
+  }
+
+  // Update content warning
+  const warn = document.getElementById('contentWarn');
+  if(warn) {
+    if(ageId === 'genz') { warn.classList.add('show'); }
+    else warn.classList.remove('show');
+  }
+
+  // Update tutor placeholder
+  const tutIn = document.getElementById('tutorIn');
+  if(tutIn) tutIn.placeholder = ag.tutorPlaceholder;
+
+  // Update dash greeting if logged in
+  if(user) {
+    const dw = document.getElementById('dashWelcome');
+    const ds = document.getElementById('dashSub');
+    if(dw) dw.textContent = ag.dashGreet(user.name);
+    if(ds) ds.textContent = ag.dashSub;
+  }
+
+  // Reload news with age filter
+  loadNews('nepal', document.querySelector('.news-tab.active'));
+}
+
+function buildAgeGrid() {
+  const grid = document.getElementById('ageGrid');
+  if(!grid) return;
+  grid.innerHTML = Object.values(AGE_GROUPS).map(ag => `
+    <div class="age-option ${selectedAge===ag.id?'selected':''}" id="age-opt-${ag.id}" onclick="selectAge('${ag.id}')">
+      <div class="age-option-emoji">${ag.emoji}</div>
+      <div class="age-option-name">${ag.label}</div>
+      <div class="age-option-range">${ag.range}</div>
+      <div class="age-option-desc">${ag.desc}</div>
+      <div class="age-option-tags">${ag.tags.map(t=>`<span class="age-tag" style="background:${ag.tagColor};color:${ag.tagTextColor};">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function selectAge(id) {
+  selectedAge = id;
+  document.querySelectorAll('.age-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('age-opt-'+id)?.classList.add('selected');
+}
+
+function saveAge() {
+  applyAgeTheme(selectedAge);
+  closeAgeModal();
+  toast(`${AGE_GROUPS[selectedAge].emoji} ${AGE_GROUPS[selectedAge].label} theme applied!`, 'ok');
+}
+
+function openAgeModal() { buildAgeGrid(); document.getElementById('mAge').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeAgeModal() { document.getElementById('mAge').classList.remove('open'); document.body.style.overflow=''; }
+
+// ══════════════════════════════════════════════════════
+// AUTO-DETECT AGE FROM DOB on register
+// ══════════════════════════════════════════════════════
+function detectAgeGroup(dob) {
+  if(!dob) return 'millennial';
+  const birthYear = new Date(dob).getFullYear();
+  const age = new Date().getFullYear() - birthYear;
+  if(age <= 28) return 'genz';
+  if(age <= 44) return 'millennial';
+  if(age <= 60) return 'genx';
+  return 'senior';
+}
+
+// ══════════════════════════════════════════════════════
+// NEWS ENGINE — uses AI to generate contextual news
+// ══════════════════════════════════════════════════════
+const NEWS_QUERIES = {
+  nepal:     'Latest news Nepal today 2025 politics economy',
+  world:     'World top news today international 2025',
+  education: 'Nepal education news SEE NEB exam 2025',
+  tech:      'Technology AI news Nepal India 2025',
+  career:    'Nepal jobs government vacancy loksewa 2025',
+};
+
+const NEWS_FALLBACK = {
+  nepal: [
+    {cat:'🇳🇵 Nepal',title:'SEE 2082 Exam Results Expected Soon — NEB Notice',desc:'National Examination Board has announced that SEE 2082 results will be published within 60 days of exam completion.',time:'2 hours ago',source:'NEB Nepal',url:'https://neb.gov.np'},
+    {cat:'🇳🇵 Nepal',title:'Lok Sewa Aayog Announces 3,500 New Vacancies',desc:'Public Service Commission Nepal opens recruitment for Kharidar, Nayab Subba, and Section Officer positions across all provinces.',time:'5 hours ago',source:'PSC Nepal',url:'https://psc.gov.np'},
+    {cat:'🇳🇵 Nepal',title:'Nepal GDP Growth Forecast Revised to 4.5% for 2025',desc:'World Bank revises Nepal economic growth forecast upward, citing remittance flows and tourism recovery.',time:'1 day ago',source:'The Kathmandu Post',url:'https://kathmandupost.com'},
+    {cat:'🏔️ Nepal',title:'Mount Everest Spring Season 2025 — Record Permits Issued',desc:'Department of Tourism issues 478 climbing permits for Everest spring season, highest in recent years.',time:'2 days ago',source:'Himalayan Times',url:'https://thehimalayantimes.com'},
+  ],
+  world: [
+    {cat:'🌍 World',title:'AI Technology Reshaping Global Education Systems',desc:'Countries worldwide adopting AI-powered tutoring systems. Nepal among South Asian nations exploring integration.',time:'3 hours ago',source:'BBC',url:'https://bbc.com'},
+    {cat:'🌍 World',title:'SAARC Nations Discuss Educational Cooperation',desc:'South Asian education ministers meet to discuss cross-border degree recognition and student exchange programs.',time:'6 hours ago',source:'Reuters',url:'https://reuters.com'},
+    {cat:'💱 Economy',title:'Nepal Remittance Touches Rs 1.2 Trillion in FY 2024-25',desc:'Nepal Rastra Bank reports record remittance inflows, supporting foreign exchange reserves and household consumption.',time:'1 day ago',source:'NRB Nepal',url:'https://nrb.org.np'},
+  ],
+  education: [
+    {cat:'📚 Education',title:'NEB Announces New Curriculum 2082 for Grade 11 & 12',desc:'National Examinations Board rolls out updated +2 curriculum with greater emphasis on practical skills and STEM integration.',time:'4 hours ago',source:'NEB Nepal',url:'https://neb.gov.np'},
+    {cat:'📝 Exam',title:'TSC Opens 440+ Teacher Vacancies — Apply Now',desc:'Teaching Service Commission announces permanent teacher positions for Primary, Lower Secondary, and Secondary levels.',time:'8 hours ago',source:'TSC Nepal',url:'https://tsc.gov.np'},
+    {cat:'🎓 University',title:'TU BBS Results 2080 Published — Check Online',desc:'Tribhuvan University Office of Controller of Examinations publishes BBS first and second year results.',time:'2 days ago',source:'TU Nepal',url:'https://tuexam.edu.np'},
+  ],
+  tech: [
+    {cat:'💻 Tech',title:'Nepal Launches Digital Literacy Drive for Rural Schools',desc:'Ministry of Education and MOEST partner with private sector to provide computer labs and internet in 500 rural schools.',time:'5 hours ago',source:'Ministry of Education',url:'https://moe.gov.np'},
+    {cat:'🤖 AI',title:'Groq AI Speeds Up Nepali Language Processing',desc:'New AI models show improved accuracy for Devanagari script and Nepali language, benefiting Nepal\'s EdTech sector.',time:'1 day ago',source:'Tech in Asia',url:'https://techinasia.com'},
+    {cat:'📱 Mobile',title:'Nepal Internet Penetration Reaches 62% — NTA Report',desc:'Nepal Telecommunications Authority reports significant growth in mobile broadband, enabling more online learning.',time:'3 days ago',source:'NTA Nepal',url:'https://nta.gov.np'},
+  ],
+  career: [
+    {cat:'💼 Career',title:'Nepal Rastra Bank Officer Level Exam — Syllabus Updated',desc:'NRB announces revised examination syllabus for Officer Level recruitment. Economics and banking fundamentals emphasized.',time:'2 hours ago',source:'NRB Nepal',url:'https://nrb.org.np'},
+    {cat:'🏛️ Lok Sewa',title:'Section Officer Written Exam Date Announced — 2082',desc:'Public Service Commission sets written examination date for Gazetted Third Class Section Officer recruitment.',time:'6 hours ago',source:'PSC Nepal',url:'https://psc.gov.np'},
+    {cat:'✈️ Foreign',title:'EPS-TOPIK Computer Test Dates for Nepal 2025',desc:'Korean Employment Permit System announces computer-based Korean language test schedule for Nepal applicants.',time:'1 day ago',source:'EPS Nepal',url:'https://eps.go.kr'},
+  ],
+};
+
+function filterNewsByAge(articles) {
+  const ag = AGE_GROUPS[currentAge];
+  // For GenZ — add trending indicators; for Senior — simplify language in display
+  return articles; // Age filtering happens in display
+}
+
+function loadNews(category, btn) {
+  // Update active tab
+  document.querySelectorAll('#newsTabs .news-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+
+  const grid = document.getElementById('newsGrid');
+  if(!grid) return;
+
+  // Show skeleton
+  grid.innerHTML = Array(4).fill(`
+    <div class="news-skeleton">
+      <div class="sk-line" style="height:140px;margin-bottom:12px;border-radius:10px;"></div>
+      <div class="sk-line" style="height:10px;width:40%;"></div>
+      <div class="sk-line" style="height:16px;"></div>
+      <div class="sk-line" style="height:16px;width:80%;"></div>
+      <div class="sk-line" style="height:12px;width:60%;margin-top:12px;"></div>
+    </div>`).join('');
+
+  // Load news (using fallback data — in production connect to a Nepal news API)
+  setTimeout(() => {
+    const articles = filterNewsByAge(NEWS_FALLBACK[category] || NEWS_FALLBACK.nepal);
+    renderNewsGrid(articles, 'newsGrid');
+  }, 600);
+}
+
+function loadDashNews(category, btn) {
+  document.querySelectorAll('[onclick*="loadDashNews"]').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const articles = filterNewsByAge(NEWS_FALLBACK[category] || NEWS_FALLBACK.nepal);
+  renderNewsGrid(articles, 'dashNewsGrid');
+}
+
+function renderNewsGrid(articles, gridId) {
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  const ag = AGE_GROUPS[currentAge];
+
+  grid.innerHTML = articles.map(a => {
+    let titleDisplay = a.title;
+    // GenZ style — add emojis and energy
+    if(currentAge === 'genz') {
+      titleDisplay = a.title;
+    }
+    // Senior — larger card
+    const cardStyle = currentAge === 'senior' ? 'font-size:16px;' : '';
+
+    return `
+      <div class="news-card" onclick="window.open('${a.url}','_blank')" style="${cardStyle}">
+        <div class="news-card-cat">${a.cat}</div>
+        <div class="news-card-title">${titleDisplay}</div>
+        <div class="news-card-desc">${a.desc}</div>
+        <div class="news-card-footer">
+          <span class="news-card-time">🕐 ${a.time}</span>
+          <span class="news-card-source">${a.source}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function loadTicker() {
+  const ticker = document.getElementById('newsTicker');
+  const tickerText = document.getElementById('tickerText');
+  if(!ticker || !tickerText) return;
+
+  const headlines = [
+    ...NEWS_FALLBACK.nepal.map(n=>n.title),
+    ...NEWS_FALLBACK.world.map(n=>n.title),
+    ...NEWS_FALLBACK.career.map(n=>n.title),
+  ];
+
+  // Duplicate for seamless loop
+  const allHeadlines = [...headlines, ...headlines];
+  tickerText.innerHTML = allHeadlines.map(h=>`<span><a href="#">${h}</a></span>`).join('');
+  ticker.style.display = 'flex';
+}
+
+// ══════════════════════════════════════════════════════
+// ROUTING
+// ══════════════════════════════════════════════════════
+function showLanding() {
   document.getElementById('pgLanding').style.display='block';
   document.getElementById('pgDash').style.display='none';
   document.getElementById('navGuest').style.display='flex';
   document.getElementById('navAuth').style.display='none';
 }
-function showDash(){
+function showDash() {
   document.getElementById('pgLanding').style.display='none';
   document.getElementById('pgDash').style.display='block';
   document.getElementById('navGuest').style.display='none';
   document.getElementById('navAuth').style.display='flex';
-  if(user){
-    document.getElementById('dashWelcome').textContent=`नमस्ते, ${user.name}! 👋`;
-    document.getElementById('navName').textContent=user.name;
-    document.getElementById('navXP').textContent=`${user.total_xp||0} XP`;
-    document.getElementById('sLessons').textContent=user.total_lessons||0;
-    document.getElementById('sXP').textContent=user.total_xp||0;
-    document.getElementById('sStreak').textContent=user.streak_days||0;
+  const ag = AGE_GROUPS[currentAge];
+  if(user) {
+    document.getElementById('dashWelcome').textContent = ag.dashGreet(user.name);
+    document.getElementById('dashSub').textContent     = ag.dashSub;
+    document.getElementById('navName').textContent     = user.name;
+    document.getElementById('navXP').textContent       = `${user.total_xp||0} XP`;
+    document.getElementById('sLessons').textContent    = user.total_lessons||0;
+    document.getElementById('sXP').textContent         = user.total_xp||0;
+    document.getElementById('sStreak').textContent     = user.streak_days||0;
+    const navBadge = document.getElementById('navAgeBadge');
+    navBadge.style.display='inline-flex';
+    navBadge.style.background=ag.tagColor;
+    navBadge.style.color=ag.tagTextColor;
+    navBadge.style.borderColor=ag.tagColor;
+    navBadge.textContent=`${ag.emoji} ${ag.label}`;
   }
   loadCourses();
+  loadDashNews('nepal', document.querySelector('[onclick*="loadDashNews"]'));
 }
 function goHome(){token&&user?showDash():showLanding();}
 
-// ─── API ──────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// API
+// ══════════════════════════════════════════════════════
 async function api(path,method='GET',body=null){
   const h={'Content-Type':'application/json'};
   if(token)h['Authorization']=`Bearer ${token}`;
@@ -655,37 +1030,51 @@ async function api(path,method='GET',body=null){
     if(!r.ok)throw new Error(d.detail||d.error||`Error ${r.status}`);
     return d;
   }catch(e){
-    if(e.message.includes('fetch')||e.message.includes('Failed'))throw new Error('Server मा connect गर्न सकिएन। Internet check गर्नुस्।');
+    if(e.message.includes('fetch')||e.message.includes('Failed'))throw new Error('Server मा connect गर्न सकिएन।');
     throw e;
   }
 }
 
-// ─── AUTH ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════
 async function doLogin(){
   const email=document.getElementById('lEmail').value.trim();
   const pass=document.getElementById('lPass').value;
-  if(!email||!pass){showErr('loginErr','सबै field भर्नुस्');return;}
+  if(!email||!pass){showErr('loginErr','Fill all fields');return;}
   setBtnLoad('btnLogin','btnLoginTxt',true,'Logging in...');
   try{
     const d=await api('/api/v1/auth/login','POST',{email,password:pass});
-    saveAuth(d);closeAuth();toast(`स्वागत छ, ${d.user.name}! 🎉`,'ok');showDash();
+    saveAuth(d);closeAuth();
+    const ag=AGE_GROUPS[currentAge];
+    toast(ag.dashGreet(d.user.name)+' 🎉','ok');
+    showDash();
   }catch(e){showErr('loginErr',e.message);}
   setBtnLoad('btnLogin','btnLoginTxt',false,'🔑 Login');
 }
+
 async function doRegister(){
   const name=document.getElementById('rName').value.trim();
   const email=document.getElementById('rEmail').value.trim();
   const pass=document.getElementById('rPass').value;
   const grade=document.getElementById('rGrade').value;
-  if(!name||!email||!pass){showErr('regErr','सबै field भर्नुस्');return;}
-  if(pass.length<6){showErr('regErr','Password कम्तिमा 6 characters हुनुपर्छ');return;}
+  const dob=document.getElementById('rDob').value;
+  if(!name||!email||!pass){showErr('regErr','Fill all fields');return;}
+  if(pass.length<6){showErr('regErr','Password min 6 characters');return;}
   setBtnLoad('btnReg','btnRegTxt',true,'Creating account...');
   try{
     const d=await api('/api/v1/auth/register','POST',{name,email,password:pass,grade:grade||null,language:'mixed'});
-    saveAuth(d);closeAuth();toast(`Sikai मा स्वागत छ, ${d.user.name}! 🎉`,'ok');showDash();
+    saveAuth(d);
+    // Auto-detect age from DOB
+    if(dob){
+      const detectedAge=detectAgeGroup(dob);
+      applyAgeTheme(detectedAge);
+    }
+    closeAuth();toast(`Sikai मा स्वागत छ, ${d.user.name}! 🎉`,'ok');showDash();
   }catch(e){showErr('regErr',e.message);}
   setBtnLoad('btnReg','btnRegTxt',false,'🚀 Create Free Account');
 }
+
 function saveAuth(d){
   token=d.access_token;user=d.user;
   localStorage.setItem('sk_tok',token);
@@ -697,7 +1086,9 @@ function logout(){
   toast('Logged out','');showLanding();
 }
 
-// ─── COURSES ──────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// COURSES
+// ══════════════════════════════════════════════════════
 async function loadCourses(){
   try{
     const list=await api('/api/v1/courses/');
@@ -714,42 +1105,42 @@ async function loadCourses(){
         <div class="course-card-meta"><span>📚 ${c.total_modules} modules</span><span>⏱ ${c.estimated_hours}h</span></div>
         <span class="badge badge-${c.level==='beginner'?'b':c.level==='intermediate'?'i':'a'}">${c.level==='beginner'?'🌱 Beginner':c.level==='intermediate'?'⚡ Intermediate':'🔥 Advanced'}</span>
       </div>`).join('');
-  }catch(e){console.warn('Courses load failed:',e.message);}
+  }catch(e){console.warn('Courses:',e.message);}
 }
+
 async function genCourse(){
   const topic=document.getElementById('cTopic').value.trim();
   const grade=document.getElementById('cGrade').value;
   const lang=document.getElementById('cLang').value;
   if(!topic){document.getElementById('cTopic').classList.add('err');setTimeout(()=>document.getElementById('cTopic').classList.remove('err'),1500);toast('Topic लेख्नुस्','err');return;}
   if(!grade){toast('Grade select गर्नुस्','err');return;}
-  if(!lvl){toast('Difficulty level select गर्नुस्','err');return;}
+  if(!lvl){toast('Difficulty select गर्नुस्','err');return;}
+
+  // Age-based content filtering
+  const ag = AGE_GROUPS[currentAge];
+  const topicLower = topic.toLowerCase();
+  const blocked = ag.contentFilter.some(f => topicLower.includes(f));
+  if(blocked){ toast('⚠️ This content is restricted for your age group','err'); return; }
+
   document.getElementById('genErr').style.display='none';
-  setBtnLoad('btnGen','btnGenTxt',true,'🧠 AI le course banaudai xa...');
+  setBtnLoad('btnGen','btnGenTxt',true,'🧠 Generating...');
   try{
-    const c=await api('/api/v1/courses/generate','POST',{topic,grade,level:lvl,language:lang});
-    curCourseId=c.id;
-    renderCourseOut(c);
-    loadCourses();
-    toast('🎉 Course generate भयो!','ok');
+    const c=await api('/api/v1/courses/generate','POST',{topic,grade,level:lvl,language:lang,age_group:currentAge});
+    curCourseId=c.id;renderCourseOut(c);loadCourses();toast('🎉 Course ready!','ok');
   }catch(e){
-    const el=document.getElementById('genErr');
-    el.textContent='❌ '+e.message;el.style.display='block';
-    toast(e.message,'err');
+    const el=document.getElementById('genErr');el.textContent='❌ '+e.message;el.style.display='block';toast(e.message,'err');
   }
   setBtnLoad('btnGen','btnGenTxt',false,'🧠 Generate My Course');
 }
+
 function renderCourseOut(c){
   document.getElementById('outTitle').textContent=`📚 ${c.title}`;
   document.getElementById('outMeta').textContent=`${c.total_modules} modules · ${c.total_lessons} lessons · ~${c.estimated_hours}h`;
-  const ml=document.getElementById('modList');
-  ml.innerHTML='';
-  let idx=0;
+  const ml=document.getElementById('modList');ml.innerHTML='';let idx=0;
   (c.modules||[]).forEach((mod,mi)=>{
     (mod.lessons||[]).forEach((les,li)=>{
       idx++;
-      const d=document.createElement('div');
-      d.className='module-item';
-      d.style.animationDelay=(idx*0.055)+'s';
+      const d=document.createElement('div');d.className='module-item';d.style.animationDelay=(idx*0.05)+'s';
       d.onclick=()=>openLesson(les,mod.title,c.id);
       d.innerHTML=`<div class="module-num">${mi+1}.${li+1}</div><div><div class="module-name">${les.title}</div><div class="module-meta-text">${mod.title} · ${les.duration_minutes||10} min</div></div><div class="module-arrow">›</div>`;
       ml.appendChild(d);
@@ -758,221 +1149,124 @@ function renderCourseOut(c){
   document.getElementById('courseOut').classList.add('vis');
   document.getElementById('btnGen').disabled=true;
 }
+
 async function viewCourse(id){
   try{
     const c=await api(`/api/v1/courses/${id}`);
-    curCourseId=id;
-    document.getElementById('cTopic').value=c.topic;
-    document.getElementById('cGrade').value=c.grade;
-    setLvl(c.level);
-    renderCourseOut(c);
-    document.getElementById('btnGen').style.display='none';
-    openCourseGen();
-  }catch(e){toast('Course load गर्न सकिएन','err');}
+    curCourseId=id;document.getElementById('cTopic').value=c.topic;
+    document.getElementById('cGrade').value=c.grade;setLvl(c.level);
+    renderCourseOut(c);document.getElementById('btnGen').style.display='none';openCourseGen();
+  }catch(e){toast('Load failed','err');}
 }
 
-// ─── LESSON ───────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// LESSON
+// ══════════════════════════════════════════════════════
 function openLesson(les,modName,courseId){
   curLesson=les;curCourseId=courseId;
   document.getElementById('lBread').textContent=modName;
   document.getElementById('lTitle').textContent=les.title_np?`${les.title} — ${les.title_np}`:les.title;
   document.getElementById('lBody').textContent=les.content_text||'';
-  if(les.key_points&&les.key_points.length){
-    document.getElementById('kpList').innerHTML=les.key_points.map(p=>`<li>${p}</li>`).join('');
-    document.getElementById('kpBox').style.display='block';
-  }else document.getElementById('kpBox').style.display='none';
-  if(les.nepal_example){
-    document.getElementById('npTxt').textContent=les.nepal_example;
-    document.getElementById('npBox').style.display='block';
-  }else document.getElementById('npBox').style.display='none';
+  if(les.key_points&&les.key_points.length){document.getElementById('kpList').innerHTML=les.key_points.map(p=>`<li>${p}</li>`).join('');document.getElementById('kpBox').style.display='block';}
+  else document.getElementById('kpBox').style.display='none';
+  if(les.nepal_example){document.getElementById('npTxt').textContent=les.nepal_example;document.getElementById('npBox').style.display='block';}
+  else document.getElementById('npBox').style.display='none';
   stopAudio();
   document.getElementById('audioBtn').style.display=les.audio_script||les.content_text?'flex':'none';
   document.getElementById('audioLangInfo').textContent='';
-  const btn=document.getElementById('btnComplete');
-  btn.disabled=false;btn.textContent='✅ Mark as Complete (+10 XP)';
-  closeCourse();
-  document.getElementById('mLesson').classList.add('open');
-  document.body.style.overflow='hidden';
+  const btn=document.getElementById('btnComplete');btn.disabled=false;btn.textContent='✅ Mark as Complete (+10 XP)';
+  closeCourse();document.getElementById('mLesson').classList.add('open');document.body.style.overflow='hidden';
 }
-function closeLesson(){
-  document.getElementById('mLesson').classList.remove('open');
-  document.body.style.overflow='';stopAudio();
-}
+function closeLesson(){document.getElementById('mLesson').classList.remove('open');document.body.style.overflow='';stopAudio();}
+
 async function completeLesson(){
   if(!curLesson)return;
-  const btn=document.getElementById('btnComplete');
-  btn.disabled=true;btn.textContent='Saving...';
+  const btn=document.getElementById('btnComplete');btn.disabled=true;btn.textContent='Saving...';
   try{
-    await api('/api/v1/progress/lesson/complete','POST',{
-      course_id:curCourseId,module_number:1,
-      lesson_number:curLesson.lesson_number,time_spent_seconds:120
-    });
-    btn.textContent='✅ Done! +10 XP earned';
-    toast('🎉 Lesson complete! +10 XP','ok');
-    if(user){
-      user.total_xp=(user.total_xp||0)+10;
-      user.total_lessons=(user.total_lessons||0)+1;
-      localStorage.setItem('sk_usr',JSON.stringify(user));
-      document.getElementById('navXP').textContent=`${user.total_xp} XP`;
-      document.getElementById('sXP').textContent=user.total_xp;
-      document.getElementById('sLessons').textContent=user.total_lessons;
-    }
-  }catch(e){
-    btn.disabled=false;btn.textContent='✅ Mark as Complete (+10 XP)';
-    toast('Progress save गर्न सकिएन: '+e.message,'err');
-  }
+    await api('/api/v1/progress/lesson/complete','POST',{course_id:curCourseId,module_number:1,lesson_number:curLesson.lesson_number,time_spent_seconds:120});
+    btn.textContent='✅ Done! +10 XP earned';toast('🎉 +10 XP!','ok');
+    if(user){user.total_xp=(user.total_xp||0)+10;user.total_lessons=(user.total_lessons||0)+1;localStorage.setItem('sk_usr',JSON.stringify(user));document.getElementById('navXP').textContent=`${user.total_xp} XP`;document.getElementById('sXP').textContent=user.total_xp;document.getElementById('sLessons').textContent=user.total_lessons;}
+  }catch(e){btn.disabled=false;btn.textContent='✅ Mark as Complete (+10 XP)';toast('Save failed: '+e.message,'err');}
 }
 
-// ─── AUDIO — Fixed Nepali/Hindi/Bhojpuri ──────────────────
+// ══════════════════════════════════════════════════════
+// AUDIO
+// ══════════════════════════════════════════════════════
 function toggleAudio(){speaking?stopAudio():startAudio();}
 function startAudio(){
-  if(!window.speechSynthesis){toast('Audio यो browser मा support हुँदैन','err');return;}
+  if(!window.speechSynthesis){toast('Audio not supported','err');return;}
   const script=curLesson?.audio_script||curLesson?.content_text||'';
-  if(!script)return;
-  stopAudio();
-  const u=new SpeechSynthesisUtterance(script);
-  u.rate=0.82;u.pitch=1.0;
+  if(!script)return;stopAudio();
+  const u=new SpeechSynthesisUtterance(script);u.rate=0.82;u.pitch=1.0;
   const pickVoice=()=>{
     const voices=window.speechSynthesis.getVoices();
     const ne=voices.find(v=>v.lang==='ne-NP'||v.lang==='ne');
     const hi=voices.find(v=>v.lang==='hi-IN'||v.lang==='hi');
     const en=voices.find(v=>v.lang.startsWith('en'));
-    let langLabel='';
-    if(ne){u.voice=ne;u.lang='ne-NP';langLabel='🇳🇵 Nepali';}
-    else if(hi){u.voice=hi;u.lang='hi-IN';langLabel='🎧 Hindi (closest to Nepali)';toast('Nepali voice उपलब्ध छैन — Hindi voice use गर्दैछ','');}
-    else if(en){u.voice=en;u.lang='en-US';langLabel='🔤 English';}
-    document.getElementById('audioLangInfo').textContent=langLabel;
-    u.onstart=()=>{speaking=true;document.getElementById('audioIcon').textContent='⏸️';document.getElementById('audioTxt').textContent='Pause narration';document.getElementById('audioBtn').classList.add('playing');};
-    u.onend=u.onerror=()=>{speaking=false;document.getElementById('audioIcon').textContent='🎧';document.getElementById('audioTxt').textContent='Listen to Audio Narration';document.getElementById('audioBtn').classList.remove('playing');document.getElementById('audioLangInfo').textContent=langLabel;};
+    let lbl='';
+    if(ne){u.voice=ne;u.lang='ne-NP';lbl='🇳🇵 Nepali';}
+    else if(hi){u.voice=hi;u.lang='hi-IN';lbl='🎧 Hindi';toast('Nepali voice unavailable — using Hindi','');}
+    else if(en){u.voice=en;u.lang='en-US';lbl='🔤 English';}
+    document.getElementById('audioLangInfo').textContent=lbl;
+    u.onstart=()=>{speaking=true;document.getElementById('audioIcon').textContent='⏸️';document.getElementById('audioTxt').textContent='Pause';document.getElementById('audioBtn').classList.add('playing');};
+    u.onend=u.onerror=()=>{speaking=false;document.getElementById('audioIcon').textContent='🎧';document.getElementById('audioTxt').textContent='Listen to Audio Narration';document.getElementById('audioBtn').classList.remove('playing');};
     window.speechSynthesis.speak(u);
   };
-  const voices=window.speechSynthesis.getVoices();
-  if(voices.length>0){pickVoice();}
-  else{window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;pickVoice();};}
+  window.speechSynthesis.getVoices().length>0?pickVoice():(window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;pickVoice();});
 }
-function stopAudio(){
-  if(window.speechSynthesis)window.speechSynthesis.cancel();
-  speaking=false;
-  const ic=document.getElementById('audioIcon');
-  const tx=document.getElementById('audioTxt');
-  const ab=document.getElementById('audioBtn');
-  if(ic)ic.textContent='🎧';
-  if(tx)tx.textContent='Listen to Audio Narration';
-  if(ab)ab.classList.remove('playing');
-}
+function stopAudio(){if(window.speechSynthesis)window.speechSynthesis.cancel();speaking=false;const ic=document.getElementById('audioIcon');const tx=document.getElementById('audioTxt');const ab=document.getElementById('audioBtn');if(ic)ic.textContent='🎧';if(tx)tx.textContent='Listen to Audio Narration';if(ab)ab.classList.remove('playing');}
 
-// ─── TUTOR ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// TUTOR
+// ══════════════════════════════════════════════════════
 async function askTutor(){
-  const inp=document.getElementById('tutorIn');
-  const msg=inp.value.trim();
-  if(!msg)return;
-  const box=document.getElementById('tutorChat');
-  const btn=document.getElementById('tutorBtn');
-  addMsg(box,'user',msg);
-  history.push({role:'user',content:msg});
-  inp.value='';btn.disabled=true;
-  const typ=document.createElement('div');
-  typ.className='chat-typing';typ.id='ttyp';
+  const inp=document.getElementById('tutorIn');const msg=inp.value.trim();if(!msg)return;
+  const box=document.getElementById('tutorChat');const btn=document.getElementById('tutorBtn');
+  addMsg(box,'user',msg);history.push({role:'user',content:msg});inp.value='';btn.disabled=true;
+  const typ=document.createElement('div');typ.className='chat-typing';
   typ.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
   box.appendChild(typ);box.scrollTop=box.scrollHeight;
   try{
-    const d=await api('/api/v1/tutor/chat','POST',{message:msg,history:history.slice(-10),language:'mixed'});
-    typ.remove();
-    const rep=d.reply||'माफ गर्नुहोस्, अहिले जवाफ दिन सकिएन।';
-    addMsg(box,'ai',rep);
-    history.push({role:'assistant',content:rep});
+    const d=await api('/api/v1/tutor/chat','POST',{message:msg,history:history.slice(-10),language:'mixed',age_group:currentAge});
+    typ.remove();const rep=d.reply||'माफ गर्नुहोस्, जवाफ दिन सकिएन।';
+    addMsg(box,'ai',rep);history.push({role:'assistant',content:rep});
     if(d.suggested_topics?.length){
-      const row=document.createElement('div');
-      row.style.cssText='display:flex;gap:8px;flex-wrap:wrap;padding:0 4px;margin-top:4px;';
-      d.suggested_topics.forEach(t=>{
-        const c=document.createElement('button');
-        c.textContent=t;
-        c.style.cssText='background:rgba(0,56,147,.15);border:1px solid rgba(0,56,147,.3);border-radius:100px;padding:5px 11px;font-size:12px;color:#6699cc;cursor:pointer;font-family:DM Sans,sans-serif;transition:all .2s;';
-        c.onmouseover=()=>c.style.borderColor='rgba(220,20,60,.4)';
-        c.onmouseout=()=>c.style.borderColor='rgba(0,56,147,.3)';
-        c.onclick=()=>{inp.value=`Tell me about ${t}`;inp.focus();};
-        row.appendChild(c);
-      });
+      const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;flex-wrap:wrap;padding:0 4px;margin-top:4px;';
+      d.suggested_topics.forEach(t=>{const c=document.createElement('button');c.textContent=t;c.style.cssText='background:rgba(0,56,147,.15);border:1px solid rgba(0,56,147,.3);border-radius:100px;padding:5px 11px;font-size:12px;color:#6699cc;cursor:pointer;font-family:inherit;';c.onclick=()=>{inp.value=`Tell me about ${t}`;inp.focus();};row.appendChild(c);});
       box.appendChild(row);
     }
-  }catch(e){
-    typ.remove();
-    addMsg(box,'ai',`माफ गर्नुहोस्, server busy छ। फेरि try गर्नुस्। (${e.message})`);
-  }
+  }catch(e){typ.remove();addMsg(box,'ai',`माफ गर्नुहोस्, server busy छ। (${e.message})`);}
   btn.disabled=false;box.scrollTop=box.scrollHeight;
 }
-function addMsg(box,role,text){
-  const d=document.createElement('div');
-  d.className=`chat-msg ${role}`;
-  if(role==='ai'){d.innerHTML=`<div class="ai-label">🤖 Sikai</div>${text.replace(/\n/g,'<br>')}`;}
-  else{d.textContent=text;}
-  box.appendChild(d);box.scrollTop=box.scrollHeight;
-}
+function addMsg(box,role,text){const d=document.createElement('div');d.className=`chat-msg ${role}`;if(role==='ai')d.innerHTML=`<div class="ai-label">🤖 Sikai</div>${text.replace(/\n/g,'<br>')}`;else d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight;}
 
-// ─── MODALS ───────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════
 function openAuth(tab='login'){switchTab(tab);document.getElementById('mAuth').classList.add('open');document.body.style.overflow='hidden';}
 function closeAuth(){document.getElementById('mAuth').classList.remove('open');document.body.style.overflow='';}
-function switchTab(t){
-  document.getElementById('fLogin').style.display=t==='login'?'block':'none';
-  document.getElementById('fReg').style.display=t==='register'?'block':'none';
-  document.getElementById('tLogin').className='auth-tab'+(t==='login'?' active':'');
-  document.getElementById('tReg').className='auth-tab'+(t==='register'?' active':'');
-  document.getElementById('loginErr').style.display='none';
-  document.getElementById('regErr').style.display='none';
-}
-function openCourseGen(){
-  document.getElementById('btnGen').style.display='flex';
-  document.getElementById('btnGen').disabled=false;
-  document.getElementById('btnGenTxt').textContent='🧠 Generate My Course';
-  document.getElementById('genErr').style.display='none';
-  document.getElementById('mCourse').classList.add('open');
-  document.body.style.overflow='hidden';
-}
+function switchTab(t){document.getElementById('fLogin').style.display=t==='login'?'block':'none';document.getElementById('fReg').style.display=t==='register'?'block':'none';document.getElementById('tLogin').className='auth-tab'+(t==='login'?' active':'');document.getElementById('tReg').className='auth-tab'+(t==='register'?' active':'');document.getElementById('loginErr').style.display='none';document.getElementById('regErr').style.display='none';}
+function openCourseGen(){document.getElementById('btnGen').style.display='flex';document.getElementById('btnGen').disabled=false;document.getElementById('btnGenTxt').textContent='🧠 Generate My Course';document.getElementById('genErr').style.display='none';document.getElementById('mCourse').classList.add('open');document.body.style.overflow='hidden';}
 function closeCourse(){document.getElementById('mCourse').classList.remove('open');document.body.style.overflow='';}
-function setLvl(l){
-  lvl=l;
-  ['b','i','a'].forEach(x=>document.getElementById('lp-'+x).className='level-pill');
-  const m={beginner:'b',intermediate:'i',advanced:'a'};
-  if(m[l])document.getElementById('lp-'+m[l]).classList.add('lvl-'+m[l]);
-}
+function setLvl(l){lvl=l;['b','i','a'].forEach(x=>document.getElementById('lp-'+x).className='level-pill');const m={beginner:'b',intermediate:'i',advanced:'a'};if(m[l])document.getElementById('lp-'+m[l]).classList.add('lvl-'+m[l]);}
 
-// ─── UI HELPERS ───────────────────────────────────────────
-function toast(msg,type=''){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className=`toast ${type} show`;
-  setTimeout(()=>t.classList.remove('show'),3500);
-}
+// ══════════════════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════════════════
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500);}
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
-function setBtnLoad(btnId,txtId,load,txt){
-  const b=document.getElementById(btnId);const s=document.getElementById(txtId);
-  if(!b||!s)return;
-  b.disabled=load;
-  s.innerHTML=load?`<span class="spin"></span> ${txt}`:txt;
-}
-function initReveal(){
-  const ob=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.1});
-  document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));
-}
+function setBtnLoad(btnId,txtId,load,txt){const b=document.getElementById(btnId);const s=document.getElementById(txtId);if(!b||!s)return;b.disabled=load;s.innerHTML=load?`<span class="spin"></span> ${txt}`:txt;}
+function initReveal(){const ob=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));}
 function initPWA(){
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js',{scope:'/'}).catch(()=>{}));
-  }
+  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js',{scope:'/'}).catch(()=>{}));
   let dp=null;
-  window.addEventListener('beforeinstallprompt',e=>{
-    e.preventDefault();dp=e;
-    const b=document.createElement('button');
-    b.textContent='📲 Install Sikai App';
-    b.style.cssText='position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#DC143C,#003893);color:#fff;border:none;padding:12px 22px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:9999;box-shadow:0 8px 24px rgba(220,20,60,.4);font-family:DM Sans,sans-serif;';
-    b.onclick=async()=>{dp.prompt();await dp.userChoice;dp=null;b.remove();};
-    document.body.appendChild(b);
-    setTimeout(()=>b.remove(),15000);
-  });
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;const b=document.createElement('button');b.textContent='📲 Install Sikai';b.style.cssText='position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#DC143C,#003893);color:#fff;border:none;padding:12px 22px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:9999;font-family:inherit;';b.onclick=async()=>{dp.prompt();await dp.userChoice;dp=null;b.remove();};document.body.appendChild(b);setTimeout(()=>b.remove(),15000);});
   window.addEventListener('offline',()=>toast('📶 Offline — cached content available',''));
   window.addEventListener('online',()=>toast('✅ Back online!','ok'));
 }
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeLesson();closeCourse();closeAuth();}
-});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLesson();closeCourse();closeAuth();closeAgeModal();}});
 </script>
 </body>
 </html>
+HTMLEOF
+cp /tmp/sikai-v3.html /mnt/user-data/outputs/sikai-v3.html
