@@ -1139,151 +1139,13 @@ async function genCourse(){
 // Shows: subtopics, YouTube links, exercises, quizzes, notes, project
 // ═══════════════════════════════════════════════════════════════════
 
-function renderCourseOut(c) {
-  // Header
-  document.getElementById('outTitle').textContent = `📚 ${c.title}`;
-  document.getElementById('outMeta').textContent  =
-    `${c.total_modules} modules · ${c.total_lessons} lessons · ~${c.estimated_hours}h · ${c.difficulty || ''}`;
-
-  const ml = document.getElementById('modList');
-  ml.innerHTML = '';
-
-  // ── Learning Outcomes ──────────────────────────────────────────
-  if (c.learning_outcomes && c.learning_outcomes.length) {
-    const outcomesEl = document.createElement('div');
-    outcomesEl.style.cssText = 'background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.3);border-radius:12px;padding:16px;margin-bottom:16px;';
-    outcomesEl.innerHTML = `
-      <div style="font-size:12px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🎯 What You Will Learn</div>
-      ${c.learning_outcomes.map(o => `<div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:6px;"><span>✅</span><span>${o}</span></div>`).join('')}
-    `;
-    ml.appendChild(outcomesEl);
-  }
-
-  // ── Prerequisites ──────────────────────────────────────────────
-  if (c.prerequisites && c.prerequisites.length) {
-    const prereqEl = document.createElement('div');
-    prereqEl.style.cssText = 'background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);border-radius:12px;padding:12px 16px;margin-bottom:16px;';
-    prereqEl.innerHTML = `
-      <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">📋 Prerequisites</div>
-      <div style="font-size:13px;color:var(--muted);">${c.prerequisites.join(' · ')}</div>
-    `;
-    ml.appendChild(prereqEl);
-  }
-
-  // ── Modules & Lessons ──────────────────────────────────────────
-  let lessonIndex = 0;
-  (c.modules || []).forEach((mod, mi) => {
-    // Module header
-    const modHeader = document.createElement('div');
-    modHeader.style.cssText = 'background:var(--surface2);border-radius:12px;padding:14px 16px;margin:12px 0 8px;display:flex;align-items:center;gap:10px;cursor:pointer;';
-    modHeader.innerHTML = `
-      <div style="width:28px;height:28px;background:var(--gradient);border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">${mi+1}</div>
-      <div>
-        <div style="font-size:15px;font-weight:700;color:var(--white);">${mod.title}</div>
-        <div style="font-size:12px;color:var(--muted);">${mod.description || ''}</div>
-      </div>
-      <div style="margin-left:auto;font-size:12px;color:var(--muted);">${mod.lessons.length} lessons</div>
-    `;
-    ml.appendChild(modHeader);
-
-    // Lessons
-    (mod.lessons || []).forEach((les, li) => {
-      lessonIndex++;
-      const lesEl = document.createElement('div');
-      lesEl.className = 'module-item';
-      lesEl.style.animationDelay = (lessonIndex * 0.05) + 's';
-      lesEl.style.marginLeft = '12px';
-      lesEl.onclick = () => openRichLesson(les, mod.title, c.id, mod);
-      lesEl.innerHTML = `
-        <div class="module-num">${mi+1}.${li+1}</div>
-        <div style="flex:1;">
-          <div class="module-name">${les.title}</div>
-          <div class="module-meta-text" style="display:flex;gap:10px;">
-            <span>${les.duration_minutes || 20} min</span>
-            ${les.exercise ? '<span>📝 Exercise</span>' : ''}
-            ${les.youtube_search ? '<span>▶️ Video</span>' : ''}
-            ${les.quiz_questions ? `<span>❓ ${les.quiz_questions.length} Quiz Qs</span>` : ''}
-          </div>
-        </div>
-        <div class="module-arrow">›</div>
-      `;
-      ml.appendChild(lesEl);
-    });
-
-    // Module quiz button
-    if (mod.module_quiz) {
-      const quizBtn = document.createElement('div');
-      quizBtn.style.cssText = 'background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:10px;padding:10px 16px;margin:6px 0 6px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;';
-      quizBtn.innerHTML = `
-        <span style="font-size:18px;">🎯</span>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:var(--gold);">Module ${mi+1} Quiz</div>
-          <div style="font-size:11px;color:var(--muted);">${mod.module_quiz.questions?.length || 0} questions · Test your understanding</div>
-        </div>
-        <div style="margin-left:auto;font-size:20px;color:var(--muted);">›</div>
-      `;
-      quizBtn.onmouseover = () => quizBtn.style.borderColor = 'rgba(255,215,0,.5)';
-      quizBtn.onmouseout  = () => quizBtn.style.borderColor = 'rgba(255,215,0,.25)';
-      quizBtn.onclick = () => openModuleQuiz(mod.module_quiz, mod.title, c.id);
-      ml.appendChild(quizBtn);
-    }
-  });
-
-  // ── Hands-On Project ──────────────────────────────────────────
-  if (c.hands_on_project) {
-    const proj = c.hands_on_project;
-    const projEl = document.createElement('div');
-    projEl.style.cssText = 'background:linear-gradient(135deg,rgba(220,20,60,.08),rgba(0,56,147,.08));border:1px solid rgba(220,20,60,.25);border-radius:14px;padding:18px;margin-top:16px;cursor:pointer;';
-    projEl.innerHTML = `
-      <div style="font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🛠️ Hands-On Project</div>
-      <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:6px;">${proj.title}</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${proj.description}</div>
-      <div style="font-size:12px;color:var(--gold);">🇳🇵 ${proj.nepal_context || ''}</div>
-    `;
-    projEl.onclick = () => openProjectModal(proj);
-    ml.appendChild(projEl);
-  }
-
-  // ── Downloadable Notes ────────────────────────────────────────
-  if (c.downloadable_notes) {
-    const notesEl = document.createElement('div');
-    notesEl.style.cssText = 'background:var(--bg);border:1px solid rgba(0,200,100,.25);border-radius:14px;padding:16px;margin-top:12px;cursor:pointer;display:flex;align-items:center;gap:12px;';
-    notesEl.innerHTML = `
-      <span style="font-size:24px;">📘</span>
-      <div>
-        <div style="font-size:14px;font-weight:700;color:var(--white);">Download Course Notes</div>
-        <div style="font-size:12px;color:var(--muted);">Key concepts, formulas, common mistakes — all in one page</div>
-      </div>
-      <div style="margin-left:auto;background:rgba(0,200,100,.15);border:1px solid rgba(0,200,100,.3);color:#00c864;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;">View Notes</div>
-    `;
-    notesEl.onclick = () => openNotesModal(c.downloadable_notes, c.title);
-    ml.appendChild(notesEl);
-  }
-
-  // ── Next Steps ────────────────────────────────────────────────
-  if (c.next_steps && c.next_steps.length) {
-    const nextEl = document.createElement('div');
-    nextEl.style.cssText = 'margin-top:12px;padding:14px 16px;background:var(--surface2);border-radius:12px;';
-    nextEl.innerHTML = `
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🚀 What Next?</div>
-      ${c.next_steps.map(s => `<div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:5px;"><span style="color:var(--blue);">→</span>${s}</div>`).join('')}
-    `;
-    ml.appendChild(nextEl);
-  }
-
-  // Show output, disable generate button
-  document.getElementById('courseOut').classList.add('vis');
-  document.getElementById('btnGen').disabled = true;
-  document.getElementById('btnGenTxt').textContent = '✅ Course Ready! Tap a lesson to start';
-}
-
-
 // ═══════════════════════════════════════════════════════════════════
-// RICH LESSON MODAL
+// FIXED openRichLesson — handles both old and new course format
+// Replace the entire openRichLesson function in sikai.html
 // ═══════════════════════════════════════════════════════════════════
 
 function openRichLesson(les, modName, courseId, mod) {
-  curLesson = les;
+  curLesson   = les;
   curCourseId = courseId;
 
   document.getElementById('lBread').textContent = modName;
@@ -1291,24 +1153,41 @@ function openRichLesson(les, modName, courseId, mod) {
     ? `${les.title} — ${les.title_np}`
     : les.title;
 
-  // Build rich lesson body
+  // ── Get main content — try all possible fields ─────────────────
+  const mainContent =
+    les.explanation ||      // V4 new field
+    les.content_text ||     // V3 field
+    les.description ||      // fallback
+    'Content loading...';   // last resort
+
   let html = '';
 
-  // Main explanation
-  if (les.explanation || les.content_text) {
-    html += `<div style="font-size:15px;line-height:1.85;color:var(--text);margin-bottom:20px;white-space:pre-wrap;">${(les.explanation || les.content_text).replace(/\n/g, '<br>')}</div>`;
-  }
-
-  // Key Concepts
-  if (les.key_concepts && les.key_concepts.length) {
+  // ── Main Explanation ───────────────────────────────────────────
+  if (mainContent && mainContent.length > 10) {
     html += `
-      <div style="background:var(--bg);border:1px solid rgba(0,56,147,.2);border-radius:14px;padding:16px;margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">💡 Key Concepts</div>
-        ${les.key_concepts.map(k => `<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;"><span style="color:var(--gold);">▸</span>${k}</div>`).join('')}
+      <div style="font-size:15px;line-height:1.85;color:var(--text);margin-bottom:20px;">
+        ${mainContent.replace(/\n/g, '<br>')}
       </div>`;
   }
 
-  // Nepal Example
+  // ── Key Concepts (try both key_concepts and key_points) ────────
+  const concepts = les.key_concepts && les.key_concepts.length
+    ? les.key_concepts
+    : (les.key_points && les.key_points.length ? les.key_points : []);
+
+  if (concepts.length) {
+    html += `
+      <div style="background:var(--bg);border:1px solid rgba(0,56,147,.2);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">💡 Key Concepts</div>
+        ${concepts.map(k => `
+          <div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;">
+            <span style="color:var(--gold);flex-shrink:0;">▸</span>
+            <span>${k}</span>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  // ── Nepal Example ──────────────────────────────────────────────
   if (les.nepal_example) {
     html += `
       <div style="background:linear-gradient(135deg,rgba(220,20,60,.07),rgba(0,56,147,.07));border:1px solid rgba(220,20,60,.2);border-radius:14px;padding:16px;margin-bottom:16px;">
@@ -1317,7 +1196,7 @@ function openRichLesson(les, modName, courseId, mod) {
       </div>`;
   }
 
-  // Exercise
+  // ── Exercise ───────────────────────────────────────────────────
   if (les.exercise) {
     html += `
       <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.3);border-radius:14px;padding:16px;margin-bottom:16px;">
@@ -1326,50 +1205,62 @@ function openRichLesson(les, modName, courseId, mod) {
       </div>`;
   }
 
-  // YouTube Resource
+  // ── YouTube Resource ───────────────────────────────────────────
   if (les.youtube_search) {
     const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(les.youtube_search)}`;
     html += `
-      <div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="window.open('${ytUrl}','_blank')">
-        <span style="font-size:24px;">▶️</span>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:700;color:var(--white);">Watch on YouTube</div>
-          <div style="font-size:12px;color:var(--muted);">${les.youtube_summary || 'Video explanation for this topic'}</div>
+      <a href="${ytUrl}" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(255,0,0,.5)'" onmouseout="this.style.borderColor='rgba(255,0,0,.2)'">
+          <span style="font-size:28px;flex-shrink:0;">▶️</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--white);">Watch on YouTube</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px;">${les.youtube_summary || 'Video explanation for this topic'}</div>
+          </div>
+          <div style="font-size:11px;color:#ff4444;font-weight:700;white-space:nowrap;">Open →</div>
         </div>
-        <div style="font-size:11px;color:#ff4444;font-weight:600;white-space:nowrap;">Open →</div>
-      </div>`;
+      </a>`;
   }
 
-  // Quiz Questions
+  // ── Quiz Questions ─────────────────────────────────────────────
   if (les.quiz_questions && les.quiz_questions.length) {
     html += `
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">❓ Check Understanding</div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">❓ Check Your Understanding</div>
         ${les.quiz_questions.map((q, i) => `
           <div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">
             <span style="color:var(--red);font-weight:700;flex-shrink:0;">Q${i+1}.</span>
-            <span>${q}</span>
-          </div>
-        `).join('')}
+            <span style="line-height:1.5;">${q}</span>
+          </div>`).join('')}
         <div style="font-size:12px;color:var(--muted);margin-top:4px;">✍️ Answer these in your notebook before moving on.</div>
       </div>`;
   }
 
-  document.getElementById('lBody').innerHTML = html;
+  // ── If nothing rendered — show a message ──────────────────────
+  if (html.trim() === '') {
+    html = `
+      <div style="text-align:center;padding:40px 20px;color:var(--muted);">
+        <div style="font-size:40px;margin-bottom:16px;">📚</div>
+        <div style="font-size:16px;font-weight:600;color:var(--white);margin-bottom:8px;">Content Loading</div>
+        <div style="font-size:14px;">Regenerate this course to get the full rich content with exercises and YouTube links.</div>
+      </div>`;
+  }
 
-  // Key points box (legacy)
+  // ── Render into modal ──────────────────────────────────────────
+  document.getElementById('lBody').innerHTML = html;
   document.getElementById('kpBox').style.display = 'none';
   document.getElementById('npBox').style.display = 'none';
 
-  // Audio
+  // Audio button
   stopAudio();
-  document.getElementById('audioBtn').style.display =
-    (les.audio_script || les.content_text) ? 'flex' : 'none';
+  const hasAudio = les.audio_script || les.content_text || les.explanation;
+  document.getElementById('audioBtn').style.display = hasAudio ? 'flex' : 'none';
   document.getElementById('audioLangInfo').textContent = '';
 
+  // Complete button
   const btn = document.getElementById('btnComplete');
   btn.disabled = false;
   btn.textContent = '✅ Mark as Complete (+10 XP)';
+  btn.onclick = completeLesson;
 
   closeCourse();
   document.getElementById('mLesson').classList.add('open');
@@ -1378,31 +1269,176 @@ function openRichLesson(les, modName, courseId, mod) {
 
 
 // ═══════════════════════════════════════════════════════════════════
+// FIXED renderCourseOut — shows content from both old and new format
+// ═══════════════════════════════════════════════════════════════════
+
+function renderCourseOut(c) {
+  document.getElementById('outTitle').textContent = `📚 ${c.title}`;
+  document.getElementById('outMeta').textContent  =
+    `${c.total_modules} modules · ${c.total_lessons} lessons · ~${c.estimated_hours}h`;
+
+  const ml = document.getElementById('modList');
+  ml.innerHTML = '';
+
+  // Learning outcomes
+  if (c.learning_outcomes && c.learning_outcomes.length) {
+    const el = document.createElement('div');
+    el.style.cssText = 'background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.3);border-radius:12px;padding:14px 16px;margin-bottom:14px;';
+    el.innerHTML = `
+      <div style="font-size:11px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🎯 You Will Learn</div>
+      ${c.learning_outcomes.map(o => `
+        <div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:5px;">
+          <span style="color:var(--green,#00c864);flex-shrink:0;">✅</span><span>${o}</span>
+        </div>`).join('')}`;
+    ml.appendChild(el);
+  }
+
+  // Modules and lessons
+  let idx = 0;
+  (c.modules || []).forEach((mod, mi) => {
+
+    // Module header
+    const modHeader = document.createElement('div');
+    modHeader.style.cssText = 'background:var(--surface2);border-radius:10px;padding:12px 14px;margin:10px 0 6px;display:flex;align-items:center;gap:10px;';
+    modHeader.innerHTML = `
+      <div style="width:26px;height:26px;background:var(--gradient);border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">${mi+1}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--white);">${mod.title}</div>
+        ${mod.description ? `<div style="font-size:12px;color:var(--muted);">${mod.description}</div>` : ''}
+      </div>
+      <div style="margin-left:auto;font-size:11px;color:var(--muted);">${(mod.lessons||[]).length} lessons</div>`;
+    ml.appendChild(modHeader);
+
+    // Lessons
+    (mod.lessons || []).forEach((les, li) => {
+      idx++;
+      const hasExercise = les.exercise && les.exercise.length > 0;
+      const hasYoutube  = les.youtube_search && les.youtube_search.length > 0;
+      const hasQuiz     = les.quiz_questions && les.quiz_questions.length > 0;
+
+      const d = document.createElement('div');
+      d.className = 'module-item';
+      d.style.animationDelay = (idx * 0.05) + 's';
+      d.style.marginLeft = '10px';
+      d.onclick = () => openRichLesson(les, mod.title, c.id, mod);
+      d.innerHTML = `
+        <div class="module-num">${mi+1}.${li+1}</div>
+        <div style="flex:1;">
+          <div class="module-name">${les.title}</div>
+          <div class="module-meta-text" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px;">
+            <span>⏱ ${les.duration_minutes || 20} min</span>
+            ${hasExercise ? '<span style="color:var(--gold);">📝 Exercise</span>' : ''}
+            ${hasYoutube  ? '<span style="color:#ff4444;">▶️ Video</span>' : ''}
+            ${hasQuiz     ? `<span style="color:#6699ff;">❓ ${les.quiz_questions.length}Q</span>` : ''}
+          </div>
+        </div>
+        <div class="module-arrow">›</div>`;
+      ml.appendChild(d);
+    });
+
+    // Module quiz
+    if (mod.module_quiz && mod.module_quiz.questions && mod.module_quiz.questions.length) {
+      const qBtn = document.createElement('div');
+      qBtn.style.cssText = 'background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px;margin:5px 0 5px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;';
+      qBtn.innerHTML = `
+        <span style="font-size:18px;">🎯</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);">${mod.module_quiz.title || 'Module Quiz'}</div>
+          <div style="font-size:11px;color:var(--muted);">${mod.module_quiz.questions.length} questions</div>
+        </div>
+        <div style="margin-left:auto;color:var(--muted);">›</div>`;
+      qBtn.onmouseover = () => qBtn.style.borderColor = 'rgba(255,215,0,.5)';
+      qBtn.onmouseout  = () => qBtn.style.borderColor = 'rgba(255,215,0,.2)';
+      qBtn.onclick = () => openModuleQuiz(mod.module_quiz, mod.title, c.id);
+      ml.appendChild(qBtn);
+    }
+  });
+
+  // Hands-on project
+  if (c.hands_on_project && c.hands_on_project.title) {
+    const proj = c.hands_on_project;
+    const el = document.createElement('div');
+    el.style.cssText = 'background:linear-gradient(135deg,rgba(220,20,60,.07),rgba(0,56,147,.07));border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:16px;margin-top:14px;cursor:pointer;transition:border-color .2s;';
+    el.innerHTML = `
+      <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🛠️ Hands-On Project</div>
+      <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;">${proj.title}</div>
+      <div style="font-size:13px;color:var(--muted);">${proj.description || ''}</div>
+      ${proj.nepal_context ? `<div style="font-size:12px;color:var(--gold);margin-top:6px;">🇳🇵 ${proj.nepal_context}</div>` : ''}`;
+    el.onmouseover = () => el.style.borderColor = 'rgba(220,20,60,.5)';
+    el.onmouseout  = () => el.style.borderColor = 'rgba(220,20,60,.2)';
+    el.onclick = () => openProjectModal(proj);
+    ml.appendChild(el);
+  }
+
+  // Downloadable notes
+  if (c.downloadable_notes && c.downloadable_notes.sections && c.downloadable_notes.sections.length) {
+    const el = document.createElement('div');
+    el.style.cssText = 'background:var(--bg);border:1px solid rgba(0,200,100,.2);border-radius:12px;padding:14px 16px;margin-top:10px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .2s;';
+    el.innerHTML = `
+      <span style="font-size:24px;">📘</span>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;color:var(--white);">Course Summary Notes</div>
+        <div style="font-size:12px;color:var(--muted);">Key concepts · Formulas · Common mistakes · Nepal examples</div>
+      </div>
+      <div style="background:rgba(0,200,100,.15);border:1px solid rgba(0,200,100,.3);color:#00c864;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;">View</div>`;
+    el.onmouseover = () => el.style.borderColor = 'rgba(0,200,100,.4)';
+    el.onmouseout  = () => el.style.borderColor = 'rgba(0,200,100,.2)';
+    el.onclick = () => openNotesModal(c.downloadable_notes, c.title);
+    ml.appendChild(el);
+  }
+
+  // Next steps
+  if (c.next_steps && c.next_steps.length) {
+    const el = document.createElement('div');
+    el.style.cssText = 'margin-top:10px;padding:12px 14px;background:var(--surface2);border-radius:10px;';
+    el.innerHTML = `
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🚀 What Next?</div>
+      ${c.next_steps.map(s => `
+        <div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:5px;">
+          <span style="color:var(--blue,#003893);">→</span>${s}
+        </div>`).join('')}`;
+    ml.appendChild(el);
+  }
+
+  // Show course output
+  document.getElementById('courseOut').classList.add('vis');
+  document.getElementById('btnGen').disabled = true;
+  document.getElementById('btnGenTxt').textContent = '✅ Course Ready! Tap a lesson to start';
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
 // MODULE QUIZ MODAL
 // ═══════════════════════════════════════════════════════════════════
 
 function openModuleQuiz(quiz, modTitle, courseId) {
-  if (!quiz || !quiz.questions) return;
+  if (!quiz || !quiz.questions || !quiz.questions.length) return;
   document.getElementById('lBread').textContent = modTitle;
   document.getElementById('lTitle').textContent = quiz.title || 'Module Quiz';
 
-  let html = `<div style="font-size:14px;color:var(--muted);margin-bottom:20px;">Answer all questions. Check your answers at the end.</div>`;
+  let html = `<div style="font-size:14px;color:var(--muted);margin-bottom:20px;">Answer all questions. Click "Show Answers" when done.</div>`;
 
   quiz.questions.forEach((q, i) => {
     html += `
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
-        <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:10px;">Q${i+1}. ${q.question}</div>
-        ${q.options && q.options.length ? q.options.map(opt => `
-          <div style="font-size:13px;color:var(--muted);padding:7px 10px;background:var(--surface2);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .2s;"
-               onmouseover="this.style.borderLeft='3px solid var(--red)'"
-               onmouseout="this.style.borderLeft='none'">
-            ${opt}
-          </div>`).join('') : `<div style="font-size:13px;color:var(--muted);font-style:italic;">Short answer — write in your notebook</div>`}
-        ${q.explanation ? `<div style="font-size:12px;color:var(--gold);margin-top:8px;display:none;" class="quiz-exp-${i}">💡 ${q.explanation}</div>` : ''}
+        <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:10px;line-height:1.5;">Q${i+1}. ${q.question}</div>
+        ${q.options && q.options.length
+          ? q.options.map(opt => `
+            <div style="font-size:13px;color:var(--muted);padding:8px 12px;background:var(--surface2);border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:all .2s;"
+                 onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--text)'"
+                 onmouseout="this.style.borderColor='transparent';this.style.color='var(--muted)'">${opt}</div>`).join('')
+          : `<div style="font-size:13px;color:var(--muted);font-style:italic;padding:8px 0;">Short answer — write in your notebook</div>`}
+        <div class="quiz-exp-${i}" style="font-size:13px;color:var(--gold);margin-top:10px;padding:10px;background:rgba(255,215,0,.08);border-radius:8px;display:none;">
+          💡 <strong>Answer:</strong> ${q.correct || ''} ${q.explanation ? `— ${q.explanation}` : ''}
+        </div>
       </div>`;
   });
 
-  html += `<button onclick="showQuizAnswers(${quiz.questions.length})" style="background:var(--gradient);border:none;border-radius:12px;padding:12px 24px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">Show Answers 🔍</button>`;
+  html += `
+    <button onclick="showQuizAnswers(${quiz.questions.length})"
+      style="background:var(--gradient);border:none;border-radius:12px;padding:14px 24px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">
+      🔍 Show Answers & Explanations
+    </button>`;
 
   document.getElementById('lBody').innerHTML = html;
   document.getElementById('kpBox').style.display = 'none';
@@ -1412,6 +1448,7 @@ function openModuleQuiz(quiz, modTitle, courseId) {
   const btn = document.getElementById('btnComplete');
   btn.disabled = false;
   btn.textContent = '✅ Quiz Done! (+20 XP)';
+  btn.onclick = completeLesson;
 
   closeCourse();
   document.getElementById('mLesson').classList.add('open');
@@ -1440,11 +1477,10 @@ function openNotesModal(notes, courseTitle) {
   (notes.sections || []).forEach(sec => {
     html += `
       <div style="margin-bottom:20px;">
-        <div style="font-size:13px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">${sec.heading}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">${sec.heading}</div>
         ${(sec.points || []).map(p => `
           <div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;line-height:1.5;">
-            <span style="color:var(--red);flex-shrink:0;">•</span>
-            <span>${p}</span>
+            <span style="color:var(--red);flex-shrink:0;">•</span><span>${p}</span>
           </div>`).join('')}
       </div>`;
   });
@@ -1455,12 +1491,17 @@ function openNotesModal(notes, courseTitle) {
   document.getElementById('audioBtn').style.display = 'none';
 
   const btn = document.getElementById('btnComplete');
-  btn.textContent = '📋 Copy Notes to Clipboard';
+  btn.textContent = '📋 Copy Notes';
+  btn.disabled = false;
   btn.onclick = () => {
-    const text = (notes.sections || []).map(s =>
-      `${s.heading}\n${(s.points||[]).map(p=>`• ${p}`).join('\n')}`
-    ).join('\n\n');
-    navigator.clipboard?.writeText(text).then(() => toast('📋 Notes copied!', 'ok'));
+    const text = (notes.sections || [])
+      .map(s => `${s.heading}\n${(s.points||[]).map(p=>`• ${p}`).join('\n')}`)
+      .join('\n\n');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => toast('📋 Notes copied to clipboard!', 'ok'));
+    } else {
+      toast('Select and copy manually', '');
+    }
   };
 
   document.getElementById('mLesson').classList.add('open');
@@ -1477,26 +1518,31 @@ function openProjectModal(proj) {
   document.getElementById('lBread').textContent = 'Hands-On Project';
   document.getElementById('lTitle').textContent = proj.title;
 
-  let html = `
-    <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;">${proj.description}</div>
+  document.getElementById('lBody').innerHTML = `
+    <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;">${proj.description || ''}</div>
+
+    ${proj.steps && proj.steps.length ? `
     <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
-      <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📋 Project Steps</div>
-      ${(proj.steps || []).map((s, i) => `
+      <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📋 Steps</div>
+      ${proj.steps.map((s, i) => `
         <div style="font-size:14px;color:var(--text);display:flex;gap:10px;margin-bottom:10px;">
           <div style="width:22px;height:22px;background:var(--gradient);border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">${i+1}</div>
           <span style="line-height:1.5;">${s}</span>
         </div>`).join('')}
-    </div>
-    <div style="background:rgba(220,20,60,.08);border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:6px;">🎯 Your Deliverable</div>
-      <div style="font-size:14px;color:var(--text);">${proj.deliverable || ''}</div>
-    </div>
+    </div>` : ''}
+
+    ${proj.deliverable ? `
+    <div style="background:rgba(220,20,60,.08);border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:6px;">🎯 Deliverable</div>
+      <div style="font-size:14px;color:var(--text);">${proj.deliverable}</div>
+    </div>` : ''}
+
+    ${proj.nepal_context ? `
     <div style="background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.2);border-radius:12px;padding:14px;">
       <div style="font-size:12px;font-weight:700;color:#6699ff;margin-bottom:6px;">🇳🇵 Nepal Context</div>
-      <div style="font-size:14px;color:var(--muted);">${proj.nepal_context || ''}</div>
-    </div>`;
+      <div style="font-size:14px;color:var(--muted);">${proj.nepal_context}</div>
+    </div>` : ''}`;
 
-  document.getElementById('lBody').innerHTML = html;
   document.getElementById('kpBox').style.display = 'none';
   document.getElementById('npBox').style.display = 'none';
   document.getElementById('audioBtn').style.display = 'none';
@@ -1513,7 +1559,6 @@ function openProjectModal(proj) {
   document.getElementById('mLesson').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
 async function viewCourse(id){
   try{
     const c=await api(`/api/v1/courses/${id}`);
