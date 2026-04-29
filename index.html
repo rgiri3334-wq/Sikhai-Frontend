@@ -1133,21 +1133,385 @@ async function genCourse(){
   setBtnLoad('btnGen','btnGenTxt',false,'🧠 Generate My Course');
 }
 
-function renderCourseOut(c){
-  document.getElementById('outTitle').textContent=`📚 ${c.title}`;
-  document.getElementById('outMeta').textContent=`${c.total_modules} modules · ${c.total_lessons} lessons · ~${c.estimated_hours}h`;
-  const ml=document.getElementById('modList');ml.innerHTML='';let idx=0;
-  (c.modules||[]).forEach((mod,mi)=>{
-    (mod.lessons||[]).forEach((les,li)=>{
-      idx++;
-      const d=document.createElement('div');d.className='module-item';d.style.animationDelay=(idx*0.05)+'s';
-      d.onclick=()=>openLesson(les,mod.title,c.id);
-      d.innerHTML=`<div class="module-num">${mi+1}.${li+1}</div><div><div class="module-name">${les.title}</div><div class="module-meta-text">${mod.title} · ${les.duration_minutes||10} min</div></div><div class="module-arrow">›</div>`;
-      ml.appendChild(d);
+// ═══════════════════════════════════════════════════════════════════
+// SIKAI RICH COURSE RENDERER — Add this to sikai.html
+// Replaces the basic renderCourseOut() function
+// Shows: subtopics, YouTube links, exercises, quizzes, notes, project
+// ═══════════════════════════════════════════════════════════════════
+
+function renderCourseOut(c) {
+  // Header
+  document.getElementById('outTitle').textContent = `📚 ${c.title}`;
+  document.getElementById('outMeta').textContent  =
+    `${c.total_modules} modules · ${c.total_lessons} lessons · ~${c.estimated_hours}h · ${c.difficulty || ''}`;
+
+  const ml = document.getElementById('modList');
+  ml.innerHTML = '';
+
+  // ── Learning Outcomes ──────────────────────────────────────────
+  if (c.learning_outcomes && c.learning_outcomes.length) {
+    const outcomesEl = document.createElement('div');
+    outcomesEl.style.cssText = 'background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.3);border-radius:12px;padding:16px;margin-bottom:16px;';
+    outcomesEl.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🎯 What You Will Learn</div>
+      ${c.learning_outcomes.map(o => `<div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:6px;"><span>✅</span><span>${o}</span></div>`).join('')}
+    `;
+    ml.appendChild(outcomesEl);
+  }
+
+  // ── Prerequisites ──────────────────────────────────────────────
+  if (c.prerequisites && c.prerequisites.length) {
+    const prereqEl = document.createElement('div');
+    prereqEl.style.cssText = 'background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);border-radius:12px;padding:12px 16px;margin-bottom:16px;';
+    prereqEl.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">📋 Prerequisites</div>
+      <div style="font-size:13px;color:var(--muted);">${c.prerequisites.join(' · ')}</div>
+    `;
+    ml.appendChild(prereqEl);
+  }
+
+  // ── Modules & Lessons ──────────────────────────────────────────
+  let lessonIndex = 0;
+  (c.modules || []).forEach((mod, mi) => {
+    // Module header
+    const modHeader = document.createElement('div');
+    modHeader.style.cssText = 'background:var(--surface2);border-radius:12px;padding:14px 16px;margin:12px 0 8px;display:flex;align-items:center;gap:10px;cursor:pointer;';
+    modHeader.innerHTML = `
+      <div style="width:28px;height:28px;background:var(--gradient);border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">${mi+1}</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--white);">${mod.title}</div>
+        <div style="font-size:12px;color:var(--muted);">${mod.description || ''}</div>
+      </div>
+      <div style="margin-left:auto;font-size:12px;color:var(--muted);">${mod.lessons.length} lessons</div>
+    `;
+    ml.appendChild(modHeader);
+
+    // Lessons
+    (mod.lessons || []).forEach((les, li) => {
+      lessonIndex++;
+      const lesEl = document.createElement('div');
+      lesEl.className = 'module-item';
+      lesEl.style.animationDelay = (lessonIndex * 0.05) + 's';
+      lesEl.style.marginLeft = '12px';
+      lesEl.onclick = () => openRichLesson(les, mod.title, c.id, mod);
+      lesEl.innerHTML = `
+        <div class="module-num">${mi+1}.${li+1}</div>
+        <div style="flex:1;">
+          <div class="module-name">${les.title}</div>
+          <div class="module-meta-text" style="display:flex;gap:10px;">
+            <span>${les.duration_minutes || 20} min</span>
+            ${les.exercise ? '<span>📝 Exercise</span>' : ''}
+            ${les.youtube_search ? '<span>▶️ Video</span>' : ''}
+            ${les.quiz_questions ? `<span>❓ ${les.quiz_questions.length} Quiz Qs</span>` : ''}
+          </div>
+        </div>
+        <div class="module-arrow">›</div>
+      `;
+      ml.appendChild(lesEl);
     });
+
+    // Module quiz button
+    if (mod.module_quiz) {
+      const quizBtn = document.createElement('div');
+      quizBtn.style.cssText = 'background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:10px;padding:10px 16px;margin:6px 0 6px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;';
+      quizBtn.innerHTML = `
+        <span style="font-size:18px;">🎯</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);">Module ${mi+1} Quiz</div>
+          <div style="font-size:11px;color:var(--muted);">${mod.module_quiz.questions?.length || 0} questions · Test your understanding</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;color:var(--muted);">›</div>
+      `;
+      quizBtn.onmouseover = () => quizBtn.style.borderColor = 'rgba(255,215,0,.5)';
+      quizBtn.onmouseout  = () => quizBtn.style.borderColor = 'rgba(255,215,0,.25)';
+      quizBtn.onclick = () => openModuleQuiz(mod.module_quiz, mod.title, c.id);
+      ml.appendChild(quizBtn);
+    }
   });
+
+  // ── Hands-On Project ──────────────────────────────────────────
+  if (c.hands_on_project) {
+    const proj = c.hands_on_project;
+    const projEl = document.createElement('div');
+    projEl.style.cssText = 'background:linear-gradient(135deg,rgba(220,20,60,.08),rgba(0,56,147,.08));border:1px solid rgba(220,20,60,.25);border-radius:14px;padding:18px;margin-top:16px;cursor:pointer;';
+    projEl.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🛠️ Hands-On Project</div>
+      <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:6px;">${proj.title}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${proj.description}</div>
+      <div style="font-size:12px;color:var(--gold);">🇳🇵 ${proj.nepal_context || ''}</div>
+    `;
+    projEl.onclick = () => openProjectModal(proj);
+    ml.appendChild(projEl);
+  }
+
+  // ── Downloadable Notes ────────────────────────────────────────
+  if (c.downloadable_notes) {
+    const notesEl = document.createElement('div');
+    notesEl.style.cssText = 'background:var(--bg);border:1px solid rgba(0,200,100,.25);border-radius:14px;padding:16px;margin-top:12px;cursor:pointer;display:flex;align-items:center;gap:12px;';
+    notesEl.innerHTML = `
+      <span style="font-size:24px;">📘</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--white);">Download Course Notes</div>
+        <div style="font-size:12px;color:var(--muted);">Key concepts, formulas, common mistakes — all in one page</div>
+      </div>
+      <div style="margin-left:auto;background:rgba(0,200,100,.15);border:1px solid rgba(0,200,100,.3);color:#00c864;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;">View Notes</div>
+    `;
+    notesEl.onclick = () => openNotesModal(c.downloadable_notes, c.title);
+    ml.appendChild(notesEl);
+  }
+
+  // ── Next Steps ────────────────────────────────────────────────
+  if (c.next_steps && c.next_steps.length) {
+    const nextEl = document.createElement('div');
+    nextEl.style.cssText = 'margin-top:12px;padding:14px 16px;background:var(--surface2);border-radius:12px;';
+    nextEl.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🚀 What Next?</div>
+      ${c.next_steps.map(s => `<div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:5px;"><span style="color:var(--blue);">→</span>${s}</div>`).join('')}
+    `;
+    ml.appendChild(nextEl);
+  }
+
+  // Show output, disable generate button
   document.getElementById('courseOut').classList.add('vis');
-  document.getElementById('btnGen').disabled=true;
+  document.getElementById('btnGen').disabled = true;
+  document.getElementById('btnGenTxt').textContent = '✅ Course Ready! Tap a lesson to start';
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// RICH LESSON MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function openRichLesson(les, modName, courseId, mod) {
+  curLesson = les;
+  curCourseId = courseId;
+
+  document.getElementById('lBread').textContent = modName;
+  document.getElementById('lTitle').textContent = les.title_np
+    ? `${les.title} — ${les.title_np}`
+    : les.title;
+
+  // Build rich lesson body
+  let html = '';
+
+  // Main explanation
+  if (les.explanation || les.content_text) {
+    html += `<div style="font-size:15px;line-height:1.85;color:var(--text);margin-bottom:20px;white-space:pre-wrap;">${(les.explanation || les.content_text).replace(/\n/g, '<br>')}</div>`;
+  }
+
+  // Key Concepts
+  if (les.key_concepts && les.key_concepts.length) {
+    html += `
+      <div style="background:var(--bg);border:1px solid rgba(0,56,147,.2);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">💡 Key Concepts</div>
+        ${les.key_concepts.map(k => `<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;"><span style="color:var(--gold);">▸</span>${k}</div>`).join('')}
+      </div>`;
+  }
+
+  // Nepal Example
+  if (les.nepal_example) {
+    html += `
+      <div style="background:linear-gradient(135deg,rgba(220,20,60,.07),rgba(0,56,147,.07));border:1px solid rgba(220,20,60,.2);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">🇳🇵 Nepal Example</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.6;">${les.nepal_example}</div>
+      </div>`;
+  }
+
+  // Exercise
+  if (les.exercise) {
+    html += `
+      <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.3);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📝 Your Exercise</div>
+        <div style="font-size:14px;color:var(--text);line-height:1.6;">${les.exercise}</div>
+      </div>`;
+  }
+
+  // YouTube Resource
+  if (les.youtube_search) {
+    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(les.youtube_search)}`;
+    html += `
+      <div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="window.open('${ytUrl}','_blank')">
+        <span style="font-size:24px;">▶️</span>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;color:var(--white);">Watch on YouTube</div>
+          <div style="font-size:12px;color:var(--muted);">${les.youtube_summary || 'Video explanation for this topic'}</div>
+        </div>
+        <div style="font-size:11px;color:#ff4444;font-weight:600;white-space:nowrap;">Open →</div>
+      </div>`;
+  }
+
+  // Quiz Questions
+  if (les.quiz_questions && les.quiz_questions.length) {
+    html += `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">❓ Check Understanding</div>
+        ${les.quiz_questions.map((q, i) => `
+          <div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+            <span style="color:var(--red);font-weight:700;flex-shrink:0;">Q${i+1}.</span>
+            <span>${q}</span>
+          </div>
+        `).join('')}
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">✍️ Answer these in your notebook before moving on.</div>
+      </div>`;
+  }
+
+  document.getElementById('lBody').innerHTML = html;
+
+  // Key points box (legacy)
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+
+  // Audio
+  stopAudio();
+  document.getElementById('audioBtn').style.display =
+    (les.audio_script || les.content_text) ? 'flex' : 'none';
+  document.getElementById('audioLangInfo').textContent = '';
+
+  const btn = document.getElementById('btnComplete');
+  btn.disabled = false;
+  btn.textContent = '✅ Mark as Complete (+10 XP)';
+
+  closeCourse();
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE QUIZ MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function openModuleQuiz(quiz, modTitle, courseId) {
+  if (!quiz || !quiz.questions) return;
+  document.getElementById('lBread').textContent = modTitle;
+  document.getElementById('lTitle').textContent = quiz.title || 'Module Quiz';
+
+  let html = `<div style="font-size:14px;color:var(--muted);margin-bottom:20px;">Answer all questions. Check your answers at the end.</div>`;
+
+  quiz.questions.forEach((q, i) => {
+    html += `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:10px;">Q${i+1}. ${q.question}</div>
+        ${q.options && q.options.length ? q.options.map(opt => `
+          <div style="font-size:13px;color:var(--muted);padding:7px 10px;background:var(--surface2);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .2s;"
+               onmouseover="this.style.borderLeft='3px solid var(--red)'"
+               onmouseout="this.style.borderLeft='none'">
+            ${opt}
+          </div>`).join('') : `<div style="font-size:13px;color:var(--muted);font-style:italic;">Short answer — write in your notebook</div>`}
+        ${q.explanation ? `<div style="font-size:12px;color:var(--gold);margin-top:8px;display:none;" class="quiz-exp-${i}">💡 ${q.explanation}</div>` : ''}
+      </div>`;
+  });
+
+  html += `<button onclick="showQuizAnswers(${quiz.questions.length})" style="background:var(--gradient);border:none;border-radius:12px;padding:12px 24px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">Show Answers 🔍</button>`;
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+  document.getElementById('audioBtn').style.display = 'none';
+
+  const btn = document.getElementById('btnComplete');
+  btn.disabled = false;
+  btn.textContent = '✅ Quiz Done! (+20 XP)';
+
+  closeCourse();
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function showQuizAnswers(count) {
+  for (let i = 0; i < count; i++) {
+    const el = document.querySelector(`.quiz-exp-${i}`);
+    if (el) el.style.display = 'block';
+  }
+  toast('✅ Answers revealed! Check your work.', 'ok');
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// DOWNLOADABLE NOTES MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function openNotesModal(notes, courseTitle) {
+  if (!notes) return;
+  document.getElementById('lBread').textContent = courseTitle;
+  document.getElementById('lTitle').textContent = notes.title || 'Course Notes';
+
+  let html = '';
+  (notes.sections || []).forEach(sec => {
+    html += `
+      <div style="margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">${sec.heading}</div>
+        ${(sec.points || []).map(p => `
+          <div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;line-height:1.5;">
+            <span style="color:var(--red);flex-shrink:0;">•</span>
+            <span>${p}</span>
+          </div>`).join('')}
+      </div>`;
+  });
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+  document.getElementById('audioBtn').style.display = 'none';
+
+  const btn = document.getElementById('btnComplete');
+  btn.textContent = '📋 Copy Notes to Clipboard';
+  btn.onclick = () => {
+    const text = (notes.sections || []).map(s =>
+      `${s.heading}\n${(s.points||[]).map(p=>`• ${p}`).join('\n')}`
+    ).join('\n\n');
+    navigator.clipboard?.writeText(text).then(() => toast('📋 Notes copied!', 'ok'));
+  };
+
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// PROJECT MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function openProjectModal(proj) {
+  if (!proj) return;
+  document.getElementById('lBread').textContent = 'Hands-On Project';
+  document.getElementById('lTitle').textContent = proj.title;
+
+  let html = `
+    <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;">${proj.description}</div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📋 Project Steps</div>
+      ${(proj.steps || []).map((s, i) => `
+        <div style="font-size:14px;color:var(--text);display:flex;gap:10px;margin-bottom:10px;">
+          <div style="width:22px;height:22px;background:var(--gradient);border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">${i+1}</div>
+          <span style="line-height:1.5;">${s}</span>
+        </div>`).join('')}
+    </div>
+    <div style="background:rgba(220,20,60,.08);border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:6px;">🎯 Your Deliverable</div>
+      <div style="font-size:14px;color:var(--text);">${proj.deliverable || ''}</div>
+    </div>
+    <div style="background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.2);border-radius:12px;padding:14px;">
+      <div style="font-size:12px;font-weight:700;color:#6699ff;margin-bottom:6px;">🇳🇵 Nepal Context</div>
+      <div style="font-size:14px;color:var(--muted);">${proj.nepal_context || ''}</div>
+    </div>`;
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+  document.getElementById('audioBtn').style.display = 'none';
+
+  const btn = document.getElementById('btnComplete');
+  btn.disabled = false;
+  btn.textContent = '✅ Project Started! (+50 XP)';
+  btn.onclick = () => {
+    toast('🚀 Project started! +50 XP 🎉', 'ok');
+    btn.textContent = '✅ Project In Progress!';
+    btn.disabled = true;
+  };
+
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 async function viewCourse(id){
