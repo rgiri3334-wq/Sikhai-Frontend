@@ -1451,18 +1451,60 @@ function openRichLesson(les, modName, courseId) {
       + '</div>';
   }
 
-  // YouTube
-  if (les.youtube_search && les.youtube_search.trim().length > 3) {
-    var ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(les.youtube_search);
-    html += '<a href="'+ytUrl+'" target="_blank" style="text-decoration:none;">'
-      + '<div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;">'
-      + '<span style="font-size:28px;flex-shrink:0;">▶️</span>'
-      + '<div style="flex:1;">'
-      + '<div style="font-size:13px;font-weight:700;color:var(--white);">Watch on YouTube</div>'
-      + '<div style="font-size:12px;color:var(--muted);margin-top:3px;">'+(les.youtube_summary||'Video explanation for this topic')+'</div>'
-      + '</div>'
-      + '<div style="font-size:11px;color:#ff4444;font-weight:700;white-space:nowrap;">Open →</div>'
-      + '</div></a>';
+  // YouTube — shows real video if available, search URL as fallback
+  var ytUrl = '';
+  var hasRealVideo = les.youtube_url && les.youtube_url.indexOf('watch?v=') !== -1;
+  if (hasRealVideo) {
+    ytUrl = les.youtube_url;
+  } else if (les.youtube_search && les.youtube_search.trim().length > 3) {
+    ytUrl = 'https://www.youtube.com/results?search_query='
+      + encodeURIComponent(les.youtube_search)
+      + '&sp=EgQIBBAB';
+  }
+
+  if (ytUrl) {
+    html += '<a href="' + ytUrl + '" target="_blank" style="text-decoration:none;">';
+    html += '<div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:14px;overflow:hidden;margin-bottom:16px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor=\'rgba(255,0,0,.5)\'" onmouseout="this.style.borderColor=\'rgba(255,0,0,.2)\'">';
+
+    // Thumbnail — only if real video
+    if (hasRealVideo && les.youtube_thumb) {
+      html += '<div style="position:relative;">'
+        + '<img src="' + les.youtube_thumb + '" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.parentElement.style.display=\'none\'">'
+        + '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">'
+        + '<div style="width:56px;height:56px;background:rgba(255,0,0,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;">▶</div>'
+        + '</div>'
+        + (les.youtube_duration ? '<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.85);color:#fff;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;">' + les.youtube_duration + '</div>' : '')
+        + '</div>';
+    }
+
+    // Info row
+    html += '<div style="padding:14px 16px;display:flex;align-items:flex-start;gap:12px;">';
+    if (!les.youtube_thumb) {
+      html += '<span style="font-size:28px;flex-shrink:0;">▶️</span>';
+    }
+    html += '<div style="flex:1;">';
+    if (hasRealVideo && les.youtube_title) {
+      html += '<div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;line-height:1.4;">' + les.youtube_title + '</div>';
+      if (les.youtube_channel) {
+        html += '<div style="font-size:12px;color:var(--muted);margin-bottom:4px;">📺 ' + les.youtube_channel + '</div>';
+      }
+      html += '<div style="display:flex;gap:12px;">';
+      if (les.youtube_duration) {
+        html += '<span style="font-size:12px;color:#ff4444;font-weight:600;">⏱ ' + les.youtube_duration + '</span>';
+      }
+      if (les.youtube_views) {
+        html += '<span style="font-size:12px;color:var(--muted);">👁 ' + les.youtube_views + '</span>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">▶️ Watch on YouTube</div>';
+      html += '<div style="font-size:12px;color:var(--muted);">' + (les.youtube_summary || 'Video explanation — 4 to 6 minutes') + '</div>';
+      html += '<div style="font-size:11px;color:#ff4444;font-weight:600;margin-top:4px;">🔍 Filtered: 4–6 min educational videos</div>';
+    }
+    html += '</div>';
+    html += '<div style="font-size:11px;color:#ff4444;font-weight:700;white-space:nowrap;align-self:center;padding-left:8px;">Open →</div>';
+    html += '</div></div></a>';
+  }
   }
 
   // Quiz questions
