@@ -1272,7 +1272,381 @@ function openRichLesson(les, modName, courseId, mod) {
 // FIXED renderCourseOut — shows content from both old and new format
 // ═══════════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════════
+// SIKAI BULLETPROOF COURSE RENDERER v5
+// Handles ALL formats — old DB data, new AI data, partial data
+// Replace EVERYTHING from renderCourseOut to end of openProjectModal
+// ═══════════════════════════════════════════════════════════════════
+
 function renderCourseOut(c) {
+  document.getElementById('outTitle').textContent = '📚 ' + c.title;
+  document.getElementById('outMeta').textContent  =
+    c.total_modules + ' modules · ' + c.total_lessons + ' lessons · ~' + c.estimated_hours + 'h';
+
+  var ml = document.getElementById('modList');
+  ml.innerHTML = '';
+
+  // Learning outcomes
+  if (c.learning_outcomes && c.learning_outcomes.length) {
+    var oel = document.createElement('div');
+    oel.style.cssText = 'background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.3);border-radius:12px;padding:14px 16px;margin-bottom:14px;';
+    var ohtml = '<div style="font-size:11px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🎯 You Will Learn</div>';
+    c.learning_outcomes.forEach(function(o){
+      ohtml += '<div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:5px;"><span style="color:#00c864;flex-shrink:0;">✅</span><span>'+o+'</span></div>';
+    });
+    oel.innerHTML = ohtml;
+    ml.appendChild(oel);
+  }
+
+  var idx = 0;
+  (c.modules||[]).forEach(function(mod, mi) {
+    // Module header
+    var mh = document.createElement('div');
+    mh.style.cssText = 'background:var(--surface2);border-radius:10px;padding:12px 14px;margin:10px 0 6px;display:flex;align-items:center;gap:10px;';
+    mh.innerHTML = '<div style="width:26px;height:26px;background:var(--gradient);border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+(mi+1)+'</div>'
+      +'<div><div style="font-size:14px;font-weight:700;color:var(--white);">'+mod.title+'</div>'
+      +(mod.description?'<div style="font-size:12px;color:var(--muted);">'+mod.description+'</div>':'')+'</div>'
+      +'<div style="margin-left:auto;font-size:11px;color:var(--muted);">'+(mod.lessons||[]).length+' lessons</div>';
+    ml.appendChild(mh);
+
+    (mod.lessons||[]).forEach(function(les, li) {
+      idx++;
+      var hasEx  = les.exercise && les.exercise.length > 5;
+      var hasYT  = les.youtube_search && les.youtube_search.length > 3;
+      var hasQ   = les.quiz_questions && les.quiz_questions.length > 0;
+      var d = document.createElement('div');
+      d.className = 'module-item';
+      d.style.animationDelay = (idx*0.05)+'s';
+      d.style.marginLeft = '10px';
+      (function(l,m,c2){ d.onclick = function(){ openRichLesson(l,m,c2); }; })(les, mod.title, c.id);
+      d.innerHTML = '<div class="module-num">'+(mi+1)+'.'+(li+1)+'</div>'
+        +'<div style="flex:1;">'
+        +'<div class="module-name">'+les.title+'</div>'
+        +'<div class="module-meta-text" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px;">'
+        +'<span>⏱ '+(les.duration_minutes||20)+' min</span>'
+        +(hasEx?'<span style="color:var(--gold);">📝 Exercise</span>':'')
+        +(hasYT?'<span style="color:#ff4444;">▶️ Video</span>':'')
+        +(hasQ?'<span style="color:#6699ff;">❓ '+les.quiz_questions.length+'Q</span>':'')
+        +'</div></div>'
+        +'<div class="module-arrow">›</div>';
+      ml.appendChild(d);
+    });
+
+    // Module quiz button
+    if (mod.module_quiz && mod.module_quiz.questions && mod.module_quiz.questions.length) {
+      var qb = document.createElement('div');
+      qb.style.cssText = 'background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px;margin:5px 0 5px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;';
+      qb.innerHTML = '<span style="font-size:18px;">🎯</span>'
+        +'<div><div style="font-size:13px;font-weight:700;color:var(--gold);">'+(mod.module_quiz.title||'Module Quiz')+'</div>'
+        +'<div style="font-size:11px;color:var(--muted);">'+mod.module_quiz.questions.length+' questions</div></div>'
+        +'<div style="margin-left:auto;color:var(--muted);">›</div>';
+      qb.onmouseover = function(){ qb.style.borderColor='rgba(255,215,0,.5)'; };
+      qb.onmouseout  = function(){ qb.style.borderColor='rgba(255,215,0,.2)'; };
+      (function(q,m,c2){ qb.onclick = function(){ openModuleQuiz(q,m,c2); }; })(mod.module_quiz, mod.title, c.id);
+      ml.appendChild(qb);
+    }
+  });
+
+  // Hands-on project
+  if (c.hands_on_project && c.hands_on_project.title) {
+    var pe = document.createElement('div');
+    pe.style.cssText = 'background:linear-gradient(135deg,rgba(220,20,60,.07),rgba(0,56,147,.07));border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:16px;margin-top:14px;cursor:pointer;transition:border-color .2s;';
+    pe.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🛠️ Hands-On Project</div>'
+      +'<div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;">'+c.hands_on_project.title+'</div>'
+      +'<div style="font-size:13px;color:var(--muted);">'+(c.hands_on_project.description||'')+'</div>'
+      +(c.hands_on_project.nepal_context?'<div style="font-size:12px;color:var(--gold);margin-top:6px;">🇳🇵 '+c.hands_on_project.nepal_context+'</div>':'');
+    pe.onmouseover = function(){ pe.style.borderColor='rgba(220,20,60,.5)'; };
+    pe.onmouseout  = function(){ pe.style.borderColor='rgba(220,20,60,.2)'; };
+    (function(p){ pe.onclick = function(){ openProjectModal(p); }; })(c.hands_on_project);
+    ml.appendChild(pe);
+  }
+
+  // Downloadable notes
+  if (c.downloadable_notes && c.downloadable_notes.sections && c.downloadable_notes.sections.length) {
+    var ne = document.createElement('div');
+    ne.style.cssText = 'background:var(--bg);border:1px solid rgba(0,200,100,.2);border-radius:12px;padding:14px 16px;margin-top:10px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .2s;';
+    ne.innerHTML = '<span style="font-size:24px;">📘</span>'
+      +'<div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--white);">Course Summary Notes</div>'
+      +'<div style="font-size:12px;color:var(--muted);">Key concepts · Formulas · Common mistakes</div></div>'
+      +'<div style="background:rgba(0,200,100,.15);border:1px solid rgba(0,200,100,.3);color:#00c864;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;">View</div>';
+    ne.onmouseover = function(){ ne.style.borderColor='rgba(0,200,100,.4)'; };
+    ne.onmouseout  = function(){ ne.style.borderColor='rgba(0,200,100,.2)'; };
+    (function(n,t){ ne.onclick = function(){ openNotesModal(n,t); }; })(c.downloadable_notes, c.title);
+    ml.appendChild(ne);
+  }
+
+  // Next steps
+  if (c.next_steps && c.next_steps.length) {
+    var nse = document.createElement('div');
+    nse.style.cssText = 'margin-top:10px;padding:12px 14px;background:var(--surface2);border-radius:10px;';
+    var nshtml = '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🚀 What Next?</div>';
+    c.next_steps.forEach(function(s){
+      nshtml += '<div style="font-size:13px;color:var(--text);display:flex;gap:8px;margin-bottom:5px;"><span style="color:var(--blue,#003893);">→</span>'+s+'</div>';
+    });
+    nse.innerHTML = nshtml;
+    ml.appendChild(nse);
+  }
+
+  document.getElementById('courseOut').classList.add('vis');
+  document.getElementById('btnGen').disabled = true;
+  document.getElementById('btnGenTxt').textContent = '✅ Course Ready! Tap a lesson to start';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// OPEN RICH LESSON — BULLETPROOF content extraction
+// ─────────────────────────────────────────────────────────────────
+function openRichLesson(les, modName, courseId) {
+  curLesson   = les;
+  curCourseId = courseId;
+
+  document.getElementById('lBread').textContent = modName;
+  document.getElementById('lTitle').textContent = les.title_np
+    ? les.title + ' — ' + les.title_np
+    : les.title;
+
+  // BULLETPROOF content extraction — try every possible field
+  var mainContent = les.explanation
+    || les.content_text
+    || les.description
+    || les.audio_script
+    || '';
+
+  // Key concepts — try both field names
+  var concepts = [];
+  if (les.key_concepts && les.key_concepts.length) concepts = les.key_concepts;
+  else if (les.key_points && les.key_points.length) concepts = les.key_points;
+
+  var html = '';
+
+  // Main content
+  if (mainContent && mainContent.trim().length > 20) {
+    html += '<div style="font-size:15px;line-height:1.85;color:var(--text);margin-bottom:20px;">'
+      + mainContent.replace(/\n/g,'<br>')
+      + '</div>';
+  }
+
+  // Key concepts
+  if (concepts.length) {
+    html += '<div style="background:var(--bg);border:1px solid rgba(0,56,147,.2);border-radius:14px;padding:16px;margin-bottom:16px;">'
+      + '<div style="font-size:12px;font-weight:700;color:#6699ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">💡 Key Concepts</div>';
+    concepts.forEach(function(k){
+      html += '<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;"><span style="color:var(--gold);flex-shrink:0;">▸</span><span>'+k+'</span></div>';
+    });
+    html += '</div>';
+  }
+
+  // Nepal example
+  if (les.nepal_example && les.nepal_example.trim().length > 5) {
+    html += '<div style="background:linear-gradient(135deg,rgba(220,20,60,.07),rgba(0,56,147,.07));border:1px solid rgba(220,20,60,.2);border-radius:14px;padding:16px;margin-bottom:16px;">'
+      + '<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">🇳🇵 Nepal Example</div>'
+      + '<div style="font-size:14px;color:var(--muted);line-height:1.6;">'+les.nepal_example+'</div>'
+      + '</div>';
+  }
+
+  // Exercise
+  if (les.exercise && les.exercise.trim().length > 5) {
+    html += '<div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.3);border-radius:14px;padding:16px;margin-bottom:16px;">'
+      + '<div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📝 Your Exercise</div>'
+      + '<div style="font-size:14px;color:var(--text);line-height:1.6;">'+les.exercise+'</div>'
+      + '</div>';
+  }
+
+  // YouTube
+  if (les.youtube_search && les.youtube_search.trim().length > 3) {
+    var ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(les.youtube_search);
+    html += '<a href="'+ytUrl+'" target="_blank" style="text-decoration:none;">'
+      + '<div style="background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;">'
+      + '<span style="font-size:28px;flex-shrink:0;">▶️</span>'
+      + '<div style="flex:1;">'
+      + '<div style="font-size:13px;font-weight:700;color:var(--white);">Watch on YouTube</div>'
+      + '<div style="font-size:12px;color:var(--muted);margin-top:3px;">'+(les.youtube_summary||'Video explanation for this topic')+'</div>'
+      + '</div>'
+      + '<div style="font-size:11px;color:#ff4444;font-weight:700;white-space:nowrap;">Open →</div>'
+      + '</div></a>';
+  }
+
+  // Quiz questions
+  if (les.quiz_questions && les.quiz_questions.length) {
+    html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">'
+      + '<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">❓ Check Your Understanding</div>';
+    les.quiz_questions.forEach(function(q, i){
+      html += '<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">'
+        + '<span style="color:var(--red);font-weight:700;flex-shrink:0;">Q'+(i+1)+'.</span>'
+        + '<span style="line-height:1.5;">'+q+'</span></div>';
+    });
+    html += '<div style="font-size:12px;color:var(--muted);margin-top:4px;">✍️ Answer in your notebook before moving on.</div></div>';
+  }
+
+  // Fallback — nothing to show
+  if (!html.trim()) {
+    html = '<div style="text-align:center;padding:30px 20px;color:var(--muted);">'
+      + '<div style="font-size:40px;margin-bottom:14px;">📚</div>'
+      + '<div style="font-size:15px;font-weight:600;color:var(--white);margin-bottom:8px;">Regenerate This Course</div>'
+      + '<div style="font-size:13px;line-height:1.6;">This course was generated with an older format.<br/>'
+      + 'Click <strong style="color:var(--gold);">Generate New Course</strong> and type the same topic again<br/>'
+      + 'to get the full rich format with exercises and YouTube links.</div>'
+      + '</div>';
+  }
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display  = 'none';
+  document.getElementById('npBox').style.display  = 'none';
+
+  stopAudio();
+  document.getElementById('audioBtn').style.display =
+    (les.audio_script || les.content_text || les.explanation) ? 'flex' : 'none';
+  document.getElementById('audioLangInfo').textContent = '';
+
+  var btn = document.getElementById('btnComplete');
+  btn.disabled = false;
+  btn.textContent = '✅ Mark as Complete (+10 XP)';
+  btn.onclick = completeLesson;
+
+  closeCourse();
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MODULE QUIZ
+// ─────────────────────────────────────────────────────────────────
+function openModuleQuiz(quiz, modTitle, courseId) {
+  if (!quiz || !quiz.questions || !quiz.questions.length) {
+    toast('No quiz questions available','err'); return;
+  }
+  document.getElementById('lBread').textContent = modTitle;
+  document.getElementById('lTitle').textContent = quiz.title || 'Module Quiz';
+
+  var html = '<div style="font-size:14px;color:var(--muted);margin-bottom:20px;">Answer all questions. Click Show Answers when done.</div>';
+  quiz.questions.forEach(function(q,i){
+    html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">'
+      +'<div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:10px;line-height:1.5;">Q'+(i+1)+'. '+q.question+'</div>';
+    if (q.options && q.options.length) {
+      q.options.forEach(function(opt){
+        html += '<div style="font-size:13px;color:var(--muted);padding:8px 12px;background:var(--surface2);border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:all .2s;"'
+          +' onmouseover="this.style.borderColor=\'var(--red)\';this.style.color=\'var(--text)\'"'
+          +' onmouseout="this.style.borderColor=\'transparent\';this.style.color=\'var(--muted)\'">'+opt+'</div>';
+      });
+    } else {
+      html += '<div style="font-size:13px;color:var(--muted);font-style:italic;padding:8px 0;">Short answer — write in your notebook</div>';
+    }
+    html += '<div class="quiz-exp-'+i+'" style="font-size:13px;color:var(--gold);margin-top:10px;padding:10px;background:rgba(255,215,0,.08);border-radius:8px;display:none;">'
+      +'💡 <strong>Answer:</strong> '+(q.correct||'')+' '+(q.explanation?' — '+q.explanation:'')+'</div></div>';
+  });
+  html += '<button onclick="showQuizAnswers('+quiz.questions.length+')" style="background:var(--gradient);border:none;border-radius:12px;padding:14px 24px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">🔍 Show Answers</button>';
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+  document.getElementById('audioBtn').style.display = 'none';
+
+  var btn = document.getElementById('btnComplete');
+  btn.disabled = false;
+  btn.textContent = '✅ Quiz Done! (+20 XP)';
+  btn.onclick = completeLesson;
+
+  closeCourse();
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function showQuizAnswers(count) {
+  for (var i=0; i<count; i++) {
+    var el = document.querySelector('.quiz-exp-'+i);
+    if (el) el.style.display = 'block';
+  }
+  toast('✅ Answers revealed!','ok');
+}
+
+// ─────────────────────────────────────────────────────────────────
+// NOTES MODAL
+// ─────────────────────────────────────────────────────────────────
+function openNotesModal(notes, courseTitle) {
+  if (!notes) return;
+  document.getElementById('lBread').textContent = courseTitle;
+  document.getElementById('lTitle').textContent = notes.title || 'Course Notes';
+
+  var html = '';
+  (notes.sections||[]).forEach(function(sec){
+    html += '<div style="margin-bottom:20px;">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">'+sec.heading+'</div>';
+    (sec.points||[]).forEach(function(p){
+      html += '<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:7px;line-height:1.5;">'
+        +'<span style="color:var(--red);flex-shrink:0;">•</span><span>'+p+'</span></div>';
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+  document.getElementById('audioBtn').style.display = 'none';
+
+  var btn = document.getElementById('btnComplete');
+  btn.textContent = '📋 Copy Notes';
+  btn.disabled = false;
+  btn.onclick = function(){
+    var text = (notes.sections||[]).map(function(s){
+      return s.heading+'\n'+(s.points||[]).map(function(p){ return '• '+p; }).join('\n');
+    }).join('\n\n');
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function(){ toast('📋 Copied!','ok'); });
+    else toast('Select and copy manually','');
+  };
+
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// PROJECT MODAL
+// ─────────────────────────────────────────────────────────────────
+function openProjectModal(proj) {
+  if (!proj) return;
+  document.getElementById('lBread').textContent = 'Hands-On Project';
+  document.getElementById('lTitle').textContent = proj.title;
+
+  var html = '<div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;">'+(proj.description||'')+'</div>';
+
+  if (proj.steps && proj.steps.length) {
+    html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📋 Steps</div>';
+    proj.steps.forEach(function(s,i){
+      html += '<div style="font-size:14px;color:var(--text);display:flex;gap:10px;margin-bottom:10px;">'
+        +'<div style="width:22px;height:22px;background:var(--gradient);border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">'+(i+1)+'</div>'
+        +'<span style="line-height:1.5;">'+s+'</span></div>';
+    });
+    html += '</div>';
+  }
+
+  if (proj.deliverable) {
+    html += '<div style="background:rgba(220,20,60,.08);border:1px solid rgba(220,20,60,.2);border-radius:12px;padding:14px;margin-bottom:14px;">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:6px;">🎯 Deliverable</div>'
+      +'<div style="font-size:14px;color:var(--text);">'+proj.deliverable+'</div></div>';
+  }
+
+  if (proj.nepal_context) {
+    html += '<div style="background:rgba(0,56,147,.1);border:1px solid rgba(0,56,147,.2);border-radius:12px;padding:14px;">'
+      +'<div style="font-size:12px;font-weight:700;color:#6699ff;margin-bottom:6px;">🇳🇵 Nepal Context</div>'
+      +'<div style="font-size:14px;color:var(--muted);">'+proj.nepal_context+'</div></div>';
+  }
+
+  document.getElementById('lBody').innerHTML = html;
+  document.getElementById('kpBox').style.display = 'none';
+  document.getElementById('npBox').style.display = 'none';
+  document.getElementById('audioBtn').style.display = 'none';
+
+  var btn = document.getElementById('btnComplete');
+  btn.disabled = false;
+  btn.textContent = '✅ Project Started! (+50 XP)';
+  btn.onclick = function(){
+    toast('🚀 Project started! +50 XP 🎉','ok');
+    btn.textContent = '✅ In Progress!';
+    btn.disabled = true;
+  };
+
+  document.getElementById('mLesson').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}function renderCourseOut(c) {
   document.getElementById('outTitle').textContent = `📚 ${c.title}`;
   document.getElementById('outMeta').textContent  =
     `${c.total_modules} modules · ${c.total_lessons} lessons · ~${c.estimated_hours}h`;
