@@ -1513,6 +1513,8 @@ function openProjectModal(proj) {
   document.getElementById('mLesson').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
+function toggleAudio(){speaking?stopAudio():startAudio();}
+function startAudio(){
   if(!window.speechSynthesis){toast('Audio not supported','err');return;}
   const script=curLesson?.audio_script||curLesson?.content_text||'';
   if(!script)return;stopAudio();
