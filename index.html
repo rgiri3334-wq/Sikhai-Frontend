@@ -1356,11 +1356,27 @@ function openLesson(les, modName, courseId) {
     html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">'
       + '<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">❓ Check Your Understanding</div>';
     les.quiz_questions.forEach(function(q, i) {
-      // Handle both string (old format) and object (new V6 format)
-      var qText  = (typeof q === 'object' && q !== null) ? (q.question || '') : String(q);
-      var qOpts  = (typeof q === 'object' && q !== null && q.options && q.options.length) ? q.options : [];
-      var qAns   = (typeof q === 'object' && q !== null) ? (q.correct || '') : '';
-      var qExp   = (typeof q === 'object' && q !== null) ? (q.explanation || '') : '';
+      // Parse quiz question — handles object, plain string, AND Python dict repr strings
+      var parsed = q;
+      if (typeof q === 'string') {
+        // Try JSON parse
+        try { parsed = JSON.parse(q); } catch(e) {
+          // Try to extract from Python repr like "{'question': '...', ...}"
+          try {
+            var fixed = q.replace(/'/g, '"').replace(/True/g,'true').replace(/False/g,'false').replace(/None/g,'null');
+            parsed = JSON.parse(fixed);
+          } catch(e2) {
+            parsed = {question: q, type: 'short_answer', options: [], correct: '', explanation: ''};
+          }
+        }
+      }
+      if (typeof parsed !== 'object' || parsed === null) {
+        parsed = {question: String(q), type: 'short_answer', options: [], correct: '', explanation: ''};
+      }
+      var qText = parsed.question || '';
+      var qOpts = (parsed.options && parsed.options.length) ? parsed.options : [];
+      var qAns  = parsed.correct || '';
+      var qExp  = parsed.explanation || '';
       html += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">'
         + '<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:8px;">'
         + '<span style="color:var(--red);font-weight:700;flex-shrink:0;">Q' + (i+1) + '.</span>'
