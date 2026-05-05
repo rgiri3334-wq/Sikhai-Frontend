@@ -1356,11 +1356,27 @@ function openLesson(les, modName, courseId) {
     html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">'
       + '<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">❓ Check Your Understanding</div>';
     les.quiz_questions.forEach(function(q, i) {
-      html += '<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">'
+      // Handle both string (old format) and object (new V6 format)
+      var qText  = (typeof q === 'object' && q !== null) ? (q.question || '') : String(q);
+      var qOpts  = (typeof q === 'object' && q !== null && q.options && q.options.length) ? q.options : [];
+      var qAns   = (typeof q === 'object' && q !== null) ? (q.correct || '') : '';
+      var qExp   = (typeof q === 'object' && q !== null) ? (q.explanation || '') : '';
+      html += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">'
+        + '<div style="font-size:14px;color:var(--text);display:flex;gap:8px;margin-bottom:8px;">'
         + '<span style="color:var(--red);font-weight:700;flex-shrink:0;">Q' + (i+1) + '.</span>'
-        + '<span style="line-height:1.5;">' + q + '</span></div>';
+        + '<span style="line-height:1.5;font-weight:600;">' + qText + '</span></div>';
+      if (qOpts.length) {
+        qOpts.forEach(function(opt) {
+          html += '<div style="font-size:13px;color:var(--muted);padding:6px 10px;background:var(--surface2);border-radius:7px;margin-bottom:4px;margin-left:20px;">' + opt + '</div>';
+        });
+      }
+      if (qAns) {
+        html += '<div style="font-size:12px;color:var(--gold);margin-top:6px;margin-left:20px;padding:6px 10px;background:rgba(255,215,0,.07);border-radius:7px;">'
+          + '✅ Answer: <strong>' + qAns + '</strong>' + (qExp ? ' — ' + qExp : '') + '</div>';
+      }
+      html += '</div>';
     });
-    html += '<div style="font-size:12px;color:var(--muted);margin-top:4px;">✍️ Answer in your notebook before moving on.</div></div>';
+    html += '<div style="font-size:12px;color:var(--muted);margin-top:4px;">✍️ Try answering before checking.</div></div>';
   }
 
   // Fallback
