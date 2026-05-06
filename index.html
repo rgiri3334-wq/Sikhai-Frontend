@@ -1025,11 +1025,26 @@ async function api(path,method='GET',body=null){
   if(body)o.body=JSON.stringify(body);
   try{
     const r=await fetch(API+path,o);
-    const d=await r.json();
+    // Handle non-JSON responses
+    const ct = r.headers.get('content-type') || '';
+    let d = {};
+    if(ct.includes('application/json')){
+      d = await r.json();
+    } else {
+      const txt = await r.text();
+      if(!r.ok) throw new Error(`Server error ${r.status}: ${txt.substring(0,100)}`);
+      return txt;
+    }
     if(!r.ok)throw new Error(d.detail||d.error||`Error ${r.status}`);
     return d;
   }catch(e){
-    if(e.message.includes('fetch')||e.message.includes('Failed'))throw new Error('Server मा connect गर्न सकिएन।');
+    // CORS errors show as TypeError: Failed to fetch
+    if(e instanceof TypeError && e.message.includes('fetch')){
+      throw new Error('CORS error — check Railway ALLOWED_ORIGINS setting. Expected: https://sikhaiaturtor.vercel.app');
+    }
+    if(e.message.includes('Failed to fetch')){
+      throw new Error('Server मा connect गर्न सकिएन। Check Railway → Variables → ALLOWED_ORIGINS');
+    }
     throw e;
   }
 }
