@@ -1140,7 +1140,10 @@ async function genCourse(){
   setBtnLoad('btnGen','btnGenTxt',true,'🧠 Generating...');
   try{
     const c=await api('/api/v1/courses/generate','POST',{topic,grade,level:lvl,language:lang,age_group:currentAge});
-    curCourseId=c.id;renderCourseOut(c);loadCourses();toast('🎉 Course ready!','ok');
+    curCourseId=c.id;renderCourseOut(c);
+    toast('🎉 Course ready!','ok');
+    // Wait 3 seconds for background save to complete, then refresh course list
+    setTimeout(()=>loadCourses(), 3000);
   }catch(e){
     const el=document.getElementById('genErr');el.textContent='❌ '+e.message;el.style.display='block';toast(e.message,'err');
   }
